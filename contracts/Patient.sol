@@ -8,11 +8,6 @@ contract Patient {
     mapping(address => bool) private hospitals;
     string[] recordsHistory;
 
-    constructor(string memory _details,address _PID){
-        details=_details;
-        PID=_PID;
-    }
-
     function setDetails(string memory _details) public {
         details = _details;
     }
@@ -29,24 +24,16 @@ contract Patient {
         doctors[_DID] = true;
     }
 
-    function removeDoctor(address _DID) public{
-        delete doctors[_DID];
-    }
-
-    function isDoctor(address _DID) public view returns (bool) {
+    function getDID(address _DID) public view returns (bool) {
         return doctors[_DID];
     }
 
     function addHospital(address _HID) public {
-        hospitals[_HID] = true;
+        doctors[_HID] = true;
     }
 
-    function removeHospital(address _HID) public{
-        delete hospitals[_HID];
-    }
-
-    function isHospital(address _HID) public view returns (bool) {
-        return hospitals[_HID];
+    function getHID(address _HID) public view returns (bool) {
+        return doctors[_HID];
     }
 
     function addrecordsHistory(string memory _cid) public {
@@ -56,6 +43,4 @@ contract Patient {
     function getrecordsHistory() public view returns (string[] memory) {
         return recordsHistory;
     }
-
-    function getDoctorsList() public pure return()
 }
