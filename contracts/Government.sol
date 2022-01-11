@@ -6,7 +6,7 @@ contract Government{
     string private phoneNumber;
     address private GID;
 
-    constructor(string memory _officeName, string memory _phoneNumber, address _GID;){
+    constructor(string memory _officeName, string memory _phoneNumber, address _GID){
         officeName=_officeName;
         phoneNumber=_phoneNumber;
         GID=_GID;
