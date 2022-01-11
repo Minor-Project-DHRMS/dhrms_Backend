@@ -17,9 +17,9 @@ contract Doctor{
     uint patientCount;
 
     //  "Raja","2342342342","MBBS","asdsdfsdf","12/02/2123",0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db,0x0A098Eda01Ce92ff4A4CCb7A4fFFb5A43EBC70DC,"Medical"
-    constructor(string memory _doctorNstring memory _phoneNumber,string memory _qualification,string memory _photo,string memory _dob,address _HID,address _DID,string memory _department)
+    constructor(string memory _doctorName, string memory _phoneNumber,string memory _qualification,string memory _photo,string memory _dob,address _HID,address _DID,string memory _department)
     {
-        doctorN =_doctorN
+        doctorName  = _doctorName; 
         DID = _DID;
         phoneNumber = _phoneNumber;
         qualification = _qualification;
@@ -29,12 +29,12 @@ contract Doctor{
         department = _department;
     }
 
-    function getDoctordoctorN) public view returns(string memory){
-        return doctorN
+    function getDoctordoctorName() public view returns(string memory){
+        return doctorName;
     }
 
-    function setDoctordoctorNstring memory _doctorN public {
-        doctorN= _doctorN
+    function setDoctordoctorName(string memory _doctorName)  public {
+        doctorName = _doctorName;
     }
 
     function getDID() public view returns(address){
@@ -83,14 +83,15 @@ contract Doctor{
     }
 
     function removePatient(address _PID) public {
-       delete patients[_PID];
-   
-       for(unit i=0; i < patientlist.length; i++){
-           if(patientlist[i] == _PID){
-               break;
-           }
-       }
-       delete patientlist[i];
+
+        delete patients[_PID];
+
+        for(uint i=0; i < patientlist.length; i++){
+            if(patientlist[i] == _PID){
+                delete patientlist[i];
+                break;
+            }
+        }
     }
 
     function getPatientList() public view returns(address[] memory){
