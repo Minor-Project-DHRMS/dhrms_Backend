@@ -60,7 +60,7 @@ contract Hospital {
     }
 
     function removeDoctor(address _DID) public {
-        for(uint i=0; i < doctorsList.length-1; i++){
+        for(uint i=0; i < doctorsList.length; i++){
             if(doctorsList[i] == _DID){
                 delete doctorsList[i];
                 break;
@@ -79,7 +79,7 @@ contract Hospital {
     }
 
     function removePatient(address _PID) public {
-        for(uint i=0; i < patientsList.length-1; i++){
+        for(uint i=0; i < patientsList.length; i++){
             if(patientsList[i] == _PID){
                 delete doctorsList[i];
                 break;
