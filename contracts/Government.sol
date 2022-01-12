@@ -24,15 +24,15 @@ contract Government{
         GID=_GID;
     }
 
-    function getOfficeName() public view return (string memory) {
+    function getOfficeName() public view returns (string memory) {
         return officeName;        
     }
 
-    function getPhoneNumber() public view return (string memory) {
+    function getPhoneNumber() public view returns (string memory) {
         return phoneNumber;        
     }
 
-    function getGID() public view return (address) {
+    function getGID() public view returns (address) {
         return GID;        
     }
 
