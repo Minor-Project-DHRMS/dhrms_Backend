@@ -113,4 +113,14 @@ contract Hospital {
     function getUploadQueue() public view returns (fileDetails[] memory) {
         return uplaodQueue;
     }
+
+    function removeReport(address _PID) public {
+
+        for(uint i=0; i < uplaodQueue.length; i++){
+            if(uplaodQueue[i].PID == _PID){
+                delete uplaodQueue[i];
+                break;
+            }
+        }
+    }
 }
