@@ -10,6 +10,10 @@ contract Patient {
     address[] hospitalsList;
     string[] recordsHistory;
 
+    constructor(string memory _details,address _PID){
+        details = _details;
+        PID = _PID;
+    }
     function setDetails(string memory _details) public {
         details = _details;
     }
