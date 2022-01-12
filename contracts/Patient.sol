@@ -50,14 +50,14 @@ contract Patient {
         hospitals[_HID] = true;
     }
 
-    function removeHospital(address _DID) public {
+    function removeHospital(address _HID) public {
         for(uint i=0; i < hospitalsList.length-1; i++){
-            if(hospitalsList[i] == _DID){
+            if(hospitalsList[i] == _HID){
                 delete hospitalsList[i];
                 break;
             }
         }
-        delete doctors[_DID];
+        delete doctors[_HID];
     }
 
     function getHospitalsList() public view returns(address[] memory){
