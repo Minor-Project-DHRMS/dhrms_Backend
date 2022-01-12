@@ -16,7 +16,7 @@ contract Doctor{
     string private department;
     uint patientCount;
 
-    //  "Raja","2342342342","MBBS","asdsdfsdf","12/02/2123",0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db,0x0A098Eda01Ce92ff4A4CCb7A4fFFb5A43EBC70DC,"Medical"
+    
     constructor(string memory _doctorName, string memory _phoneNumber,string memory _qualification,string memory _photo,string memory _dob,address _HID,address _DID,string memory _department)
     {
         doctorName  = _doctorName; 
