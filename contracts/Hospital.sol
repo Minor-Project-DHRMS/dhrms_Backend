@@ -103,10 +103,10 @@ contract Hospital {
     function addToUplaodQueue(
         string memory _file,
         address PID,
-        address HID
+        address _HID
     ) public {
         uplaodQueue.push(
-            fileDetails(PID, _file, msg.sender, HID, block.timestamp)
+            fileDetails(PID, _file, msg.sender, _HID, block.timestamp)
         );
     }
 
