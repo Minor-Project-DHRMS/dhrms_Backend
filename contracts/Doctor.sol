@@ -1,9 +1,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-
-contract Doctor{
-
+contract Doctor {
     string private doctorName;
     address private DID;
     string private phoneNumber;
@@ -14,12 +12,19 @@ contract Doctor{
     mapping(address => bool) private patients;
     address[] patientlist;
     string private department;
-    uint patientCount;
+    uint256 patientCount;
 
-    
-    constructor(string memory _doctorName, string memory _phoneNumber,string memory _qualification,string memory _photo,string memory _dob,address _HID,address _DID,string memory _department)
-    {
-        doctorName  = _doctorName; 
+    constructor(
+        string memory _doctorName,
+        string memory _phoneNumber,
+        string memory _qualification,
+        string memory _photo,
+        string memory _dob,
+        address _HID,
+        address _DID,
+        string memory _department
+    ) {
+        doctorName = _doctorName;
         DID = _DID;
         phoneNumber = _phoneNumber;
         qualification = _qualification;
@@ -29,15 +34,15 @@ contract Doctor{
         department = _department;
     }
 
-    function getDoctordoctorName() public view returns(string memory){
+    function getDoctorName() public view returns (string memory) {
         return doctorName;
     }
 
-    function setDoctordoctorName(string memory _doctorName)  public {
+    function setDoctordoctorName(string memory _doctorName) public {
         doctorName = _doctorName;
     }
 
-    function getDID() public view returns(address){
+    function getDID() public view returns (address) {
         return DID;
     }
 
@@ -49,7 +54,7 @@ contract Doctor{
         phoneNumber = _phoneNumber;
     }
 
-    function getphoneNumber() public view returns(string memory){
+    function getphoneNumber() public view returns (string memory) {
         return phoneNumber;
     }
 
@@ -57,7 +62,7 @@ contract Doctor{
         qualification = _qualification;
     }
 
-    function getQualification() public view returns(string memory){
+    function getQualification() public view returns (string memory) {
         return qualification;
     }
 
@@ -65,40 +70,51 @@ contract Doctor{
         photo = _photo;
     }
 
-    function getPhoto() public view returns(string memory){
+    function getPhoto() public view returns (string memory) {
         return photo;
+    }
+
+    function setDob(string memory _dob) public {
+        dob = _dob;
+    }
+
+    function getDob() public view returns (string memory) {
+        return dob;
+    }
+
+    function setDepartment(string memory _department) public {
+        department = _department;
+    }
+
+    function getDepartment() public view returns (string memory) {
+        return department;
     }
 
     function setHospital(address _HID) public {
         HID = _HID;
     }
 
-    function getHospital() public view returns(address){
+    function getHospital() public view returns (address) {
         return HID;
     }
 
-    function addPatient(address _PID) public{
+    function addPatient(address _PID) public {
         patients[_PID] = true;
         patientlist.push(_PID);
     }
 
     function removePatient(address _PID) public {
-
         delete patients[_PID];
 
-        for(uint i=0; i < patientlist.length; i++){
-            if(patientlist[i] == _PID){
+        for (uint256 i = 0; i < patientlist.length; i++) {
+            if (patientlist[i] == _PID) {
                 delete patientlist[i];
                 break;
             }
         }
     }
 
-    function getPatientList() public view returns(address[] memory){
+    function getPatientList() public view returns (address[] memory) {
         return patientlist;
     }
-
-
-    
-
 }
