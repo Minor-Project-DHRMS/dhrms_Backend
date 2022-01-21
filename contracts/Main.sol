@@ -7,6 +7,7 @@ import "contracts/Government.sol";
 import "contracts/Hospital.sol";
 import "contracts/Doctor.sol";
 import "contracts/Patient.sol";
+import "hardhat/console.sol";
 
 // contract RoleAccess{
 
@@ -55,6 +56,7 @@ contract Main is AccessControl {
         governmentDetails[msg.sender] = firstGovermentOfficeAdd;
 
         _setupRole("GOVERNMENT", msg.sender);
+        _setRoleAdmin("GOVERNMENT", "GOVERNMENT");
         _setRoleAdmin("PATIENT", "GOVERNMENT");
         _setRoleAdmin("HOSPITAL", "GOVERNMENT");
         _setRoleAdmin("DOCTOR", "GOVERNMENT");
@@ -284,27 +286,43 @@ contract Main is AccessControl {
         return [gov.getOfficeName(), gov.getPhoneNumber()];
     }
 
+    function isGovernment(address _GID) public view returns (bool) {
+        return (hasRole("GOVERNMENT", _GID));
+    }
+
+    function isPatient(address _GID) public view returns (bool) {
+        return (hasRole("PATIENT", _GID));
+    }
+
+    function isHospital(address _GID) public view returns (bool) {
+        return (hasRole("HOSPITAL", _GID));
+    }
+
+    function isDoctor(address _GID) public view returns (bool) {
+        return (hasRole("DOCTOR", _GID));
+    }
+
     modifier onlyGoverment() {
         // require(isGovernment[msg.sender]);
-        require(hasRole("GOVERNMENT", msg.sender), "Restricted to users.");
+        require(isGovernment(msg.sender), "Restricted to users.");
         _;
     }
 
     modifier onlyPatient() {
         // require(isPatient[msg.sender]);
-        require(hasRole("PATIENT", msg.sender), "Restricted to PATIENT.");
+        require(isPatient(msg.sender), "Restricted to PATIENT.");
         _;
     }
 
     modifier onlyDoctor() {
         // require(isDoctor[msg.sender]);
-        require(hasRole("DOCTOR", msg.sender), "Restricted to DOCTOR.");
+        require(isDoctor(msg.sender), "Restricted to DOCTOR.");
         _;
     }
 
     modifier onlyHospital() {
         // require(isHospital[msg.sender]);
-        require(hasRole("HOSPITAL", msg.sender), "Restricted to HOSPITAL.");
+        require(isHospital(msg.sender), "Restricted to HOSPITAL.");
         _;
     }
 }

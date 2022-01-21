@@ -73,6 +73,9 @@ const main = async () => {
   const getDtxn = await mainContract.getPatientDetails("0x5B38Da6a701c568545dCfcB03FcB875f56beddC4");
   console.log(getDtxn);
 
+  const isGov = await mainContract.isGovernment("0x5B38Da6a701c568545dCfcB03FcB875f56beddC4");
+  console.log(isGov);
+
 };
 
 const runMain = async () => {
