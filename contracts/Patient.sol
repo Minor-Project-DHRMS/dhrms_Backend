@@ -19,7 +19,7 @@ contract Patient {
         details = _details;
     }
 
-    function getDetails() public view returns (string memory) {
+    function getDetails() public onlyAllowed view returns (string memory)  {
         return details;
     }
 
@@ -79,5 +79,10 @@ contract Patient {
 
     function getrecordsHistory() public view returns (string[] memory) {
         return recordsHistory;
+    }
+
+    modifier onlyAllowed() {
+        require(isDoctor(tx.origin) || isHospital(tx.origin) || (tx.origin == PID), "Restricted to PATIENT.");
+        _;
     }
 }
