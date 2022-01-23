@@ -325,8 +325,4 @@ contract Main is AccessControl {
         require(isHospital(msg.sender), "Restricted to HOSPITAL.");
         _;
     }
-
-    function isPatientsDoctor(address PID, address DID ) public view returns (bool) {
-        return Patient(patientDetails[PID]).isDoctor(DID);
-    }
 }
