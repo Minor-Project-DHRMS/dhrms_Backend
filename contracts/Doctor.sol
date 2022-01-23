@@ -106,7 +106,7 @@ contract Doctor {
     function removePatient(address _PID) public {
         delete patients[_PID];
 
-        for (uint256 i = 0; i < patientlist.length; i++) {
+        for (uint256 i = 0; i < patientlist.length-1; i++) {
             if (patientlist[i] == _PID) {
                 delete patientlist[i];
                 break;
