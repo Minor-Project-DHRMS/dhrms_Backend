@@ -110,7 +110,6 @@ describe("Giving read permission", function () {
     }catch(error){
       assert(true);
     }
-    
   });
   
 });
