@@ -1,4 +1,4 @@
-const { expect } = require("chai");
+const { expect, assert } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("Deployment", () => {
@@ -100,6 +100,19 @@ describe("Giving read permission", function () {
   it("Checking that doctor is able to get patient1 datails", async () => { 
     expect(await mainContract.connect(doc1).getPatientDetails(patient1.address)).to.equal(JSON.stringify(pd));
   });
+
+  it("Checking for unauthorized access to patient datails (doctor)", async () => { 
+    
+    try{
+      expect(await mainContract.connect(doc2).getPatientDetails(patient1.address)).to.equal(JSON.stringify(pd));
+      console.log("unauthorized access is happend");
+      assert(false);
+    }catch(error){
+      assert(true);
+    }
+    
+  });
+  
 });
 
 describe("Giving write permission", function () {
@@ -108,6 +121,18 @@ describe("Giving write permission", function () {
     expect(await mainContract.connect(patient1).giveWriteAccess(hospital1.address))
     .to.emit(mainContract, "newWriteAccess")
     .withArgs(hospital1.address);
+  });
+
+  it("Checking for unauthorized access to patient datails (hospital)", async () => { 
+    
+    try{
+      expect(await mainContract.connect(hospital2).getPatientDetails(patient1.address)).to.equal(JSON.stringify(pd));
+      console.log("unauthorized access is happend");
+      assert(false);
+    }catch(error){
+      assert(true);
+    }
+    
   });
 
 });
