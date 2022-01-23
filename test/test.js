@@ -102,7 +102,138 @@ describe("Giving read permission", function () {
   });
 });
 
+describe("Giving write permission", function () {
+  it("Should returns new hospital ID to which permission given", async function () {
 
+    expect(await mainContract.connect(patient1).giveWriteAccess(hospital1.address))
+    .to.emit(mainContract, "newWriteAccess")
+    .withArgs(hospital1.address);
+  });
+
+});
+
+describe("Removing read permission", function () {
+  it("Should returns new doctor ID to which permission reverted", async function () {
+
+    expect(await mainContract.connect(patient1).removeReadAccess(doc1.address))
+    .to.emit(mainContract, "removeReadAccessDoctor")
+    .withArgs(doc1.address);
+  
+  });
+});
+
+describe("Removing write permission", function () {
+  it("Should returns new hospital ID to which permission reverted", async function () {
+
+    expect(await mainContract.connect(patient1).removeWriteAccess(hospital1.address))
+    .to.emit(mainContract, "removeWriteAccessHospital")
+    .withArgs(hospital1.address);
+  
+  });
+});
+
+describe("Send Records for upload", function () {
+  it("Should returns new uploaded records", async function () {
+
+    expect(await mainContract.connect(doc1).sendRecordsForUpload("CID",patient1.address))
+    .to.emit(mainContract, "newRecordForUpload")
+    .withArgs("CID",patient1.address);
+  
+  });
+});
+
+describe("Send Records for upload (Hospital)", function () {
+  it("Should returns new uploaded recorded (Hospital)", async function () {
+
+    expect(await mainContract.connect(hospital1).sendRecordsForUploadH("CID",patient1.address,hospital1.address))
+    .to.emit(mainContract, "newRecordForUploadH")
+    .withArgs("CID",patient1.address,hospital1.address);
+  
+  });
+});
+
+describe("Adding records to patient history", function () {
+  it("Should returns all records of patient", async function () {
+
+    await mainContract.connect(hospital1).reportUploaded(patient1.address,"CID");
+
+    expect(await mainContract.connect(hospital1).getRecordsHistory(patient1.address)).to.eql(["CID"]);
+  
+  });
+});
+
+
+describe("Retrieving patient information", function () {
+  it("Should return particular patient details", async function () {
+
+    expect(await mainContract.connect(patient1).getPatientDetails(patient1.address)).to.equal(JSON.stringify(pd));
+  
+  });
+
+  it("Should return doctors list of particular patient", async function () {
+
+    expect(await mainContract.connect(patient1).getDoctorsList(patient1.address)).to.eql([doc1.address]);
+  
+  });
+
+  it("Should return hospital list of particular patient", async function () {
+
+    expect(await mainContract.connect(patient1).getHospitalsList(patient1.address)).to.eql([hospital1.address]);
+  
+  });
+
+});
+
+describe("Retrieving Doctor information", function () {
+  it("Should return particular doctor details", async function () {
+
+    expect(await mainContract.connect(doc1).getDoctorDetails(doc1.address)).to.eql(["Dr.M.N.Rayangoudar","7611198762","MBBS","photo","01/12/1968","Cardiology"]);
+  
+  });
+
+  it("Should return patient list of particular doctor", async function () {
+
+    expect(await mainContract.connect(doc1).getPatientList(doc1.address)).to.eql([patient1.address]);
+  
+  });
+
+  it("Should return hospital name in which doctor is working", async function () {
+
+    expect(await mainContract.connect(doc1).getDoctorH(doc1.address)).to.eql(hospital1.address);
+  
+  });
+
+});
+
+describe("Retrieving hospital information", function () {
+    it("Should return particular hospital details", async function () {
+  
+      expect(await mainContract.connect(hospital1).getHospitalDetails(hospital1.address)).to.eql(["SDM Medical College Dharwad", "9203251212"]);
+    
+    });
+  
+    it("Should return doctor list of particular hospital", async function () {
+  
+      expect(await mainContract.connect(hospital1).getHospitalDoctorList(hospital1.address)).to.eql([]);
+    
+    });
+
+    it("Should return patient list of particular hospital", async function () {
+  
+      expect(await mainContract.connect(hospital1).getHospitalPatientList(hospital1.address)).to.eql([patient1.address]);
+    
+    });
+
+});
+
+describe("Retrieving Government information", function () {
+  it("Should return particular government office details", async function () {
+
+    expect(await mainContract.connect(gov2).getGovernmentDetails(gov2.address)).to.eql(["Hubli-office", "9433387654"]);
+  
+  });
+
+});
 
 var pd = {
   "details": {
