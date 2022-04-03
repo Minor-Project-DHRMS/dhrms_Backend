@@ -10,15 +10,16 @@ contract Patient {
     address[] hospitalsList;
     string[] recordsHistory;
 
-    constructor(string memory _details,address _PID){
+    constructor(string memory _details, address _PID) {
         details = _details;
         PID = _PID;
     }
+
     function setDetails(string memory _details) public {
         details = _details;
     }
 
-    function getDetails() public view returns (string memory) {
+    function getDetails() public onlyAllowed view returns (string memory)  {
         return details;
     }
 
@@ -32,8 +33,8 @@ contract Patient {
     }
 
     function removeDoctor(address _DID) public {
-        for(uint i=0; i < doctorsList.length-1; i++){
-            if(doctorsList[i] == _DID){
+        for (uint256 i = 0; i < doctorsList.length - 1; i++) {
+            if (doctorsList[i] == _DID) {
                 delete doctorsList[i];
                 break;
             }
@@ -41,7 +42,7 @@ contract Patient {
         delete doctors[_DID];
     }
 
-    function getDoctorsList() public view returns(address[] memory){
+    function getDoctorsList() public view returns (address[] memory) {
         return doctorsList;
     }
 
@@ -55,8 +56,8 @@ contract Patient {
     }
 
     function removeHospital(address _HID) public {
-        for(uint i=0; i < hospitalsList.length-1; i++){
-            if(hospitalsList[i] == _HID){
+        for (uint256 i = 0; i < hospitalsList.length - 1; i++) {
+            if (hospitalsList[i] == _HID) {
                 delete hospitalsList[i];
                 break;
             }
@@ -64,7 +65,7 @@ contract Patient {
         delete doctors[_HID];
     }
 
-    function getHospitalsList() public view returns(address[] memory){
+    function getHospitalsList() public view returns (address[] memory) {
         return hospitalsList;
     }
 
@@ -80,4 +81,8 @@ contract Patient {
         return recordsHistory;
     }
 
+    modifier onlyAllowed() {
+        require(isDoctor(tx.origin) || isHospital(tx.origin) || (tx.origin == PID), "Restricted to PATIENT.");
+        _;
+    }
 }
