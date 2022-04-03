@@ -97,11 +97,11 @@ describe("Giving read permission", function () {
     .to.emit(mainContract, "newReadAccess")
     .withArgs(doc1.address);
   });
-  it("Checking that doctor is able to get patient1 datails", async () => { 
+  it("Checking that doctor is able to get patient1 details", async () => { 
     expect(await mainContract.connect(doc1).getPatientDetails(patient1.address)).to.equal(JSON.stringify(pd));
   });
 
-  it("Checking for unauthorized access to patient datails (doctor)", async () => { 
+  it("Checking that unauthorized doctors are not allowed to access the details", async () => { 
     
     try{
       expect(await mainContract.connect(doc2).getPatientDetails(patient1.address)).to.equal(JSON.stringify(pd));
@@ -122,7 +122,7 @@ describe("Giving write permission", function () {
     .withArgs(hospital1.address);
   });
 
-  it("Checking for unauthorized access to patient datails (hospital)", async () => { 
+  it("Checking that unauthorized hospitals are not allowed to access the details", async () => { 
     
     try{
       expect(await mainContract.connect(hospital2).getPatientDetails(patient1.address)).to.equal(JSON.stringify(pd));
