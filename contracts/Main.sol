@@ -29,6 +29,14 @@ contract Main is AccessControl {
     mapping(address => address) hospitalDetails;
     mapping(address => address) governmentDetails;
 
+    struct Approve {
+        address instanceAdd;
+        address userAdd;
+        string userType;
+    }
+
+    Approve[] private ApproveList;
+
     event newOffice(string officeName, string _phoneNumber, address _GID);
     event newHospital(string HospitalName, string ph_no, address HID);
     event newDoctor(
@@ -137,6 +145,165 @@ contract Main is AccessControl {
 
         emit newPatient(_details, _PID);
     }
+
+
+
+    // Adding to Aprrove List
+    function addGovernmentOfficetoList(
+        string memory _officeName,
+        string memory _phoneNumber,
+        address _GID
+    ) public onlyGoverment {
+        address govOfficeAdd = address(
+            new Government(_officeName, _phoneNumber, _GID)
+        );
+        
+        ApproveList.push(Approve(govOfficeAdd, _GID, "GOV"));
+    }
+
+    function addHospitaltoList(
+        string memory _hospitalName,
+        string memory _phoneNumber,
+        address _HID
+    ) public onlyGoverment {
+        address hospitalAdd = address(
+            new Hospital(_hospitalName, _HID, _phoneNumber)
+        );
+        ApproveList.push(Approve(hospitalAdd, _HID, "HOS"));
+    }
+
+    function addDoctortoList(
+        string memory _doctorName,
+        string memory _phoneNumber,
+        string memory _qualification,
+        string memory _photo,
+        string memory _dob,
+        address _HID,
+        address _DID,
+        string memory _department
+    ) public onlyGoverment {
+        address doctorAdd = address(
+            new Doctor(
+                _doctorName,
+                _phoneNumber,
+                _qualification,
+                _photo,
+                _dob,
+                _HID,
+                _DID,
+                _department
+            )
+        );
+        doctorDetails[_DID] = doctorAdd;
+        grantRole("DOCTOR", _DID);
+        // isDoctor[_DID] = true;
+        emit newDoctor(
+            _doctorName,
+            _phoneNumber,
+            _qualification,
+            _photo,
+            _dob,
+            _HID,
+            _DID,
+            _department
+        );
+    }
+
+    function addPatienttoList(string memory _details, address _PID)
+        public
+        onlyGoverment
+    {
+        address patientAdd = address(new Patient(_details, _PID));
+        patientDetails[_PID] = patientAdd;
+
+        ApproveList.push(Approve(patientAdd, _PID, "PAT"));
+    }
+
+
+// ---------------------------------------
+function addGovernmentOfficeFromList(
+        address _GID
+    ) public onlyGoverment {
+
+        for (uint256 i = 0; i < ApproveList.length - 1; i++) {
+            if (ApproveList[i].userAdd == _GID) {
+                governmentDetails[_GID] = ApproveList[i].instanceAdd;
+                delete ApproveList[i];
+                grantRole("GOVERNMENT", _GID);
+                Government gov = Government(governmentDetails[_GID]);
+                emit newOffice(gov.getOfficeName(),gov.getPhoneNumber(), _GID);
+                break;
+            }
+        }
+    }
+
+    function addHospitalFromList(
+        string memory _hospitalName,
+        string memory _phoneNumber,
+        address _HID
+    ) public onlyGoverment {
+        address hospitalAdd = address(
+            new Hospital(_hospitalName, _HID, _phoneNumber)
+        );
+        hospitalDetails[_HID] = hospitalAdd;
+        grantRole("HOSPITAL", _HID);
+        // isHospital[_HID] = true;
+        emit newHospital(_hospitalName, _phoneNumber, _HID);
+    }
+
+    function addDoctorFromList(
+        string memory _doctorName,
+        string memory _phoneNumber,
+        string memory _qualification,
+        string memory _photo,
+        string memory _dob,
+        address _HID,
+        address _DID,
+        string memory _department
+    ) public onlyGoverment {
+        address doctorAdd = address(
+            new Doctor(
+                _doctorName,
+                _phoneNumber,
+                _qualification,
+                _photo,
+                _dob,
+                _HID,
+                _DID,
+                _department
+            )
+        );
+        doctorDetails[_DID] = doctorAdd;
+        grantRole("DOCTOR", _DID);
+        // isDoctor[_DID] = true;
+        emit newDoctor(
+            _doctorName,
+            _phoneNumber,
+            _qualification,
+            _photo,
+            _dob,
+            _HID,
+            _DID,
+            _department
+        );
+    }
+
+    function addPatientFromList(string memory _details, address _PID)
+        public
+        onlyGoverment
+    {
+        address patientAdd = address(new Patient(_details, _PID));
+        patientDetails[_PID] = patientAdd;
+
+        grantRole("PATIENT", _PID);
+
+        emit newPatient(_details, _PID);
+    }
+
+
+
+// -------------------------------------------------------
+
 
     function giveReadAccess(address _DID) public onlyPatient {
         Patient(patientDetails[msg.sender]).addDoctor(_DID);
