@@ -1,5 +1,6 @@
 require("@nomiclabs/hardhat-waffle");
-require('solidity-coverage')
+require("solidity-coverage");
+require("dotenv").config();
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -25,7 +26,13 @@ module.exports = {
         enabled: true,
         runs: 1,
       },
-      evmVersion: "byzantium"
+      evmVersion: "byzantium",
+    },
+  },
+  networks: {
+    rinkeby: {
+      url: process.env.STAGING_ALCHEMY_KEY,
+      accounts: [process.env.PRIVATE_KEY],
     },
   },
 };
