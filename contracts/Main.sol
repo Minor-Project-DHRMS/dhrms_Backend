@@ -9,14 +9,6 @@ import "contracts/Doctor.sol";
 import "contracts/Patient.sol";
 import "hardhat/console.sol";
 
-// contract RoleAccess{
-
-//     mapping(address => bool) isPatient;
-//     mapping(address => bool) isDoctor;
-//     mapping(address => bool) isHospital;
-//     mapping(address => bool) isGovernment;
-
-// }
 
 contract Main is AccessControl {
     bytes32 public constant GOVERNMENT = keccak256("GOVERNMENT");
@@ -29,14 +21,7 @@ contract Main is AccessControl {
     mapping(address => address) hospitalDetails;
     mapping(address => address) governmentDetails;
 
-    struct Approve {
-        address instanceAdd;
-        address userAdd;
-        string userType;
-        uint256 timestamp;
-    }
-
-    Approve[] private ApproveList;
+    
 
     event newOffice(string officeName, string _phoneNumber, address _GID);
     event newHospital(string HospitalName, string ph_no, address HID);
@@ -146,149 +131,54 @@ contract Main is AccessControl {
 
         emit newPatient(_details, _PID);
     }
+    
 
+    function addGovernmentOfficeFromList(
+            address _GID,address instanceAdd
+        ) public onlyGoverment {
 
-// --------------------------------------------------------
-    // Adding to Aprrove List
-    function addGovernmentOfficetoList(
-        string memory _officeName,
-        string memory _phoneNumber,
-        address _GID
-    ) public onlyGoverment {
-        address govOfficeAdd = address(
-            new Government(_officeName, _phoneNumber, _GID)
-        );
-        
-        ApproveList.push(Approve(govOfficeAdd, _GID, "GOV", block.timestamp));
-    }
-
-    function addHospitaltoList(
-        string memory _hospitalName,
-        string memory _phoneNumber,
-        address _HID
-    ) public onlyGoverment {
-        address hospitalAdd = address(
-            new Hospital(_hospitalName, _HID, _phoneNumber)
-        );
-        ApproveList.push(Approve(hospitalAdd, _HID, "HOS", block.timestamp));
-    }
-
-    function addDoctortoList(
-        string memory _doctorName,
-        string memory _phoneNumber,
-        string memory _qualification,
-        string memory _photo,
-        string memory _dob,
-        address _HID,
-        address _DID,
-        string memory _department
-    ) public onlyGoverment {
-        address doctorAdd = address(
-            new Doctor(
-                _doctorName,
-                _phoneNumber,
-                _qualification,
-                _photo,
-                _dob,
-                _HID,
-                _DID,
-                _department
-            )
-        );
-        ApproveList.push(Approve(doctorAdd, _DID, "DOC", block.timestamp));
-    }
-
-    function addPatienttoList(string memory _details, address _PID)
-        public
-        onlyGoverment
-    {
-        address patientAdd = address(new Patient(_details, _PID));
-
-        ApproveList.push(Approve(patientAdd, _PID, "PAT", block.timestamp));
-    }
-
-    function getApproveList() public view returns (Approve[] memory) {
-        return ApproveList;
-    }
-
-
-// ---------------------------------------
-function addGovernmentOfficeFromList(
-        address _GID
-    ) public onlyGoverment {
-
-        for (uint256 i = 0; i < ApproveList.length ; i++) {
-            if (ApproveList[i].userAdd == _GID) {
-                governmentDetails[_GID] = ApproveList[i].instanceAdd;
-                delete ApproveList[i];
-                grantRole("GOVERNMENT", _GID);
-                Government gov = Government(governmentDetails[_GID]);
-                emit newOffice(gov.getOfficeName(),gov.getPhoneNumber(), _GID);
-                break;
-            }
+            governmentDetails[_GID] = instanceAdd;
+            grantRole("GOVERNMENT", _GID);
+            Government gov = Government(governmentDetails[_GID]);
+            emit newOffice(gov.getOfficeName(),gov.getPhoneNumber(), _GID);
         }
-    }
 
     function addHospitalFromList(
-        address _HID
+        address _HID,address instanceAdd
     ) public onlyGoverment {
-        for (uint256 i = 0; i < ApproveList.length ; i++) {
-            if (ApproveList[i].userAdd == _HID) {
-                hospitalDetails[_HID] = ApproveList[i].instanceAdd;
-                delete ApproveList[i];
-                grantRole("HOSPITAL", _HID);
-                Hospital hospital = Hospital(hospitalDetails[_HID]);
-                emit newHospital(hospital.getHospitalName(), hospital.getPhoneNumber(), _HID);
-                break;
-            }
-        }
+        hospitalDetails[_HID] = instanceAdd;
+        grantRole("HOSPITAL", _HID);
+        Hospital hospital = Hospital(hospitalDetails[_HID]);
+        emit newHospital(hospital.getHospitalName(), hospital.getPhoneNumber(), _HID);
     }
 
     function addDoctorFromList(
-        address _DID
+        address _DID, address instanceAdd
     ) public onlyGoverment {
-        for (uint256 i = 0; i < ApproveList.length ; i++) {
-            if (ApproveList[i].userAdd == _DID) {
-                doctorDetails[_DID] = ApproveList[i].instanceAdd;
-                delete ApproveList[i];
-                grantRole("DOCTOR", _DID);
-                Doctor doctor = Doctor(doctorDetails[_DID]);
+        doctorDetails[_DID] = instanceAdd;
+        grantRole("DOCTOR", _DID);
+        Doctor doctor = Doctor(doctorDetails[_DID]);
 
-                console.log("hello from addDoctorFromList");
-
-                emit newDoctor(
-                    doctor.getDoctorName(),
-                    doctor.getphoneNumber(),
-                    doctor.getQualification(),
-                    doctor.getPhoto(),
-                    doctor.getDob(),
-                    doctor.getHospital(),
-                    _DID,
-                    doctor.getDepartment()
-                    );
-                    break;
-                }
-        }
+        emit newDoctor(
+            doctor.getDoctorName(),
+            doctor.getphoneNumber(),
+            doctor.getQualification(),
+            doctor.getPhoto(),
+            doctor.getDob(),
+            doctor.getHospital(),
+            _DID,
+            doctor.getDepartment()
+            );
     }
 
-    function addPatientFromList(address _PID)
-        public
-        onlyGoverment
+    function addPatientFromList(address _PID,address instanceAdd)
+        public onlyGoverment
+    
     {
-        for (uint256 i = 0; i < ApproveList.length ; i++) {
-            if (ApproveList[i].userAdd == _PID) {
-                patientDetails[_PID] = ApproveList[i].instanceAdd;
-                delete ApproveList[i];
-                grantRole("PATIENT", _PID);
-                emit newPatient(getPatientDetailsForGov(_PID), _PID);
-                break;
-            }
-        }
+        patientDetails[_PID] = instanceAdd;
+        grantRole("PATIENT", _PID);
+        emit newPatient(getPatientDetailsForGov(_PID), _PID);
     }
-
-
-
-// -------------------------------------------------------
 
 
     function giveReadAccess(address _DID) public onlyPatient {
@@ -464,27 +354,37 @@ function addGovernmentOfficeFromList(
         return (hasRole("DOCTOR", _GID));
     }
 
-    modifier onlyGoverment() {
-        // require(isGovernment[msg.sender]);
+    function _onlyGoverment() private view {
         require(isGovernment(msg.sender), "Restricted to users.");
+    }
+
+    modifier onlyGoverment() {
+        _onlyGoverment();
         _;
     }
 
-    modifier onlyPatient() {
-        // require(isPatient[msg.sender]);
+    function _onlyPatient() private view{
         require(isPatient(msg.sender), "Restricted to PATIENT.");
+    }
+    modifier onlyPatient() {
+        _onlyPatient();
         _;
     }
 
-    modifier onlyDoctor() {
-        // require(isDoctor[msg.sender]);
+    function _onlyDoctor() private view {
         require(isDoctor(msg.sender), "Restricted to DOCTOR.");
+    }
+    modifier onlyDoctor() {
+        _onlyDoctor();
         _;
     }
 
-    modifier onlyHospital() {
-        // require(isHospital[msg.sender]);
+    function _onlyHospital() private view {
         require(isHospital(msg.sender), "Restricted to HOSPITAL.");
+
+    }
+    modifier onlyHospital() {
+        _onlyHospital();
         _;
     }
 }
