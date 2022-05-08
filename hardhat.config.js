@@ -24,7 +24,7 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 1,
+        runs: 200,
       },
       evmVersion: "byzantium",
     },
@@ -35,4 +35,11 @@ module.exports = {
       accounts: [process.env.PRIVATE_KEY],
     },
   },
+  networks: {
+    hardhat: {
+      allowUnlimitedContractSize: true
+    }
+  },
 };
+
+// allowUnlimitedContractSize 
