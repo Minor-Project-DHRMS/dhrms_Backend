@@ -33,6 +33,7 @@ contract Main is AccessControl {
         address instanceAdd;
         address userAdd;
         string userType;
+        uint256 timestamp;
     }
 
     Approve[] private ApproveList;
@@ -147,7 +148,7 @@ contract Main is AccessControl {
     }
 
 
-
+// --------------------------------------------------------
     // Adding to Aprrove List
     function addGovernmentOfficetoList(
         string memory _officeName,
@@ -158,7 +159,7 @@ contract Main is AccessControl {
             new Government(_officeName, _phoneNumber, _GID)
         );
         
-        ApproveList.push(Approve(govOfficeAdd, _GID, "GOV"));
+        ApproveList.push(Approve(govOfficeAdd, _GID, "GOV", block.timestamp));
     }
 
     function addHospitaltoList(
@@ -169,7 +170,7 @@ contract Main is AccessControl {
         address hospitalAdd = address(
             new Hospital(_hospitalName, _HID, _phoneNumber)
         );
-        ApproveList.push(Approve(hospitalAdd, _HID, "HOS"));
+        ApproveList.push(Approve(hospitalAdd, _HID, "HOS", block.timestamp));
     }
 
     function addDoctortoList(
@@ -194,19 +195,7 @@ contract Main is AccessControl {
                 _department
             )
         );
-        doctorDetails[_DID] = doctorAdd;
-        grantRole("DOCTOR", _DID);
-        // isDoctor[_DID] = true;
-        emit newDoctor(
-            _doctorName,
-            _phoneNumber,
-            _qualification,
-            _photo,
-            _dob,
-            _HID,
-            _DID,
-            _department
-        );
+        ApproveList.push(Approve(doctorAdd, _DID, "DOC", block.timestamp));
     }
 
     function addPatienttoList(string memory _details, address _PID)
@@ -214,9 +203,12 @@ contract Main is AccessControl {
         onlyGoverment
     {
         address patientAdd = address(new Patient(_details, _PID));
-        patientDetails[_PID] = patientAdd;
 
-        ApproveList.push(Approve(patientAdd, _PID, "PAT"));
+        ApproveList.push(Approve(patientAdd, _PID, "PAT", block.timestamp));
+    }
+
+    function getApproveList() public view returns (Approve[] memory) {
+        return ApproveList;
     }
 
 
@@ -225,7 +217,7 @@ function addGovernmentOfficeFromList(
         address _GID
     ) public onlyGoverment {
 
-        for (uint256 i = 0; i < ApproveList.length - 1; i++) {
+        for (uint256 i = 0; i < ApproveList.length ; i++) {
             if (ApproveList[i].userAdd == _GID) {
                 governmentDetails[_GID] = ApproveList[i].instanceAdd;
                 delete ApproveList[i];
@@ -238,66 +230,60 @@ function addGovernmentOfficeFromList(
     }
 
     function addHospitalFromList(
-        string memory _hospitalName,
-        string memory _phoneNumber,
         address _HID
     ) public onlyGoverment {
-        address hospitalAdd = address(
-            new Hospital(_hospitalName, _HID, _phoneNumber)
-        );
-        hospitalDetails[_HID] = hospitalAdd;
-        grantRole("HOSPITAL", _HID);
-        // isHospital[_HID] = true;
-        emit newHospital(_hospitalName, _phoneNumber, _HID);
+        for (uint256 i = 0; i < ApproveList.length ; i++) {
+            if (ApproveList[i].userAdd == _HID) {
+                hospitalDetails[_HID] = ApproveList[i].instanceAdd;
+                delete ApproveList[i];
+                grantRole("HOSPITAL", _HID);
+                Hospital hospital = Hospital(hospitalDetails[_HID]);
+                emit newHospital(hospital.getHospitalName(), hospital.getPhoneNumber(), _HID);
+                break;
+            }
+        }
     }
 
     function addDoctorFromList(
-        string memory _doctorName,
-        string memory _phoneNumber,
-        string memory _qualification,
-        string memory _photo,
-        string memory _dob,
-        address _HID,
-        address _DID,
-        string memory _department
+        address _DID
     ) public onlyGoverment {
-        address doctorAdd = address(
-            new Doctor(
-                _doctorName,
-                _phoneNumber,
-                _qualification,
-                _photo,
-                _dob,
-                _HID,
-                _DID,
-                _department
-            )
-        );
-        doctorDetails[_DID] = doctorAdd;
-        grantRole("DOCTOR", _DID);
-        // isDoctor[_DID] = true;
-        emit newDoctor(
-            _doctorName,
-            _phoneNumber,
-            _qualification,
-            _photo,
-            _dob,
-            _HID,
-            _DID,
-            _department
-        );
+        for (uint256 i = 0; i < ApproveList.length ; i++) {
+            if (ApproveList[i].userAdd == _DID) {
+                doctorDetails[_DID] = ApproveList[i].instanceAdd;
+                delete ApproveList[i];
+                grantRole("DOCTOR", _DID);
+                Doctor doctor = Doctor(doctorDetails[_DID]);
+
+                console.log("hello from addDoctorFromList");
+
+                emit newDoctor(
+                    doctor.getDoctorName(),
+                    doctor.getphoneNumber(),
+                    doctor.getQualification(),
+                    doctor.getPhoto(),
+                    doctor.getDob(),
+                    doctor.getHospital(),
+                    _DID,
+                    doctor.getDepartment()
+                    );
+                    break;
+                }
+        }
     }
 
-    function addPatientFromList(string memory _details, address _PID)
+    function addPatientFromList(address _PID)
         public
         onlyGoverment
     {
-        address patientAdd = address(new Patient(_details, _PID));
-        patientDetails[_PID] = patientAdd;
-
-        grantRole("PATIENT", _PID);
-
-        emit newPatient(_details, _PID);
+        for (uint256 i = 0; i < ApproveList.length ; i++) {
+            if (ApproveList[i].userAdd == _PID) {
+                patientDetails[_PID] = ApproveList[i].instanceAdd;
+                delete ApproveList[i];
+                grantRole("PATIENT", _PID);
+                emit newPatient(getPatientDetailsForGov(_PID), _PID);
+                break;
+            }
+        }
     }
 
 
@@ -389,6 +375,15 @@ function addGovernmentOfficeFromList(
         returns (string memory)
     {
         return Patient(patientDetails[_PID]).getDetails();
+    }
+
+    function getPatientDetailsForGov(address _PID)
+        public
+        view
+        onlyGoverment
+        returns (string memory)
+    {
+        return Patient(patientDetails[_PID]).getDetailsForGov();
     }
 
     function getDoctorDetails(address _DID)
