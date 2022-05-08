@@ -20,7 +20,9 @@ describe("Deployment", () => {
 
         console.log("deployer address : " + deployer.address);
         mainContract = await mainContractFactory.deploy("Dharwad-office", "7975578890");
-        await mainContract.deployed();
+      await mainContract.deployed();
+      
+      console.log("bytecode: :"+ mainContractFactory.bytecode);
     });
 
     it("Sets deployer as the first government Office", async () => {

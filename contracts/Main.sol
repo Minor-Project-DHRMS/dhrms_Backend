@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
@@ -9,14 +9,6 @@ import "contracts/Doctor.sol";
 import "contracts/Patient.sol";
 import "hardhat/console.sol";
 
-// contract RoleAccess{
-
-//     mapping(address => bool) isPatient;
-//     mapping(address => bool) isDoctor;
-//     mapping(address => bool) isHospital;
-//     mapping(address => bool) isGovernment;
-
-// }
 
 contract Main is AccessControl {
     bytes32 public constant GOVERNMENT = keccak256("GOVERNMENT");
@@ -59,10 +51,9 @@ contract Main is AccessControl {
     event newRecordForUploadH(string _file, address _PID, address _HID);
 
     constructor(string memory _officeName, string memory _phoneNumber) {
-        address firstGovermentOfficeAdd = address(
+        governmentDetails[msg.sender] = address(
             new Government(_officeName, _phoneNumber, msg.sender)
         );
-        governmentDetails[msg.sender] = firstGovermentOfficeAdd;
 
         _setupRole("GOVERNMENT", msg.sender);
         _setRoleAdmin("GOVERNMENT", "GOVERNMENT");
@@ -76,10 +67,9 @@ contract Main is AccessControl {
         string memory _phoneNumber,
         address _GID
     ) public onlyGoverment {
-        address govOfficeAdd = address(
+        governmentDetails[_GID] = address(
             new Government(_officeName, _phoneNumber, _GID)
         );
-        governmentDetails[_GID] = govOfficeAdd;
         grantRole("GOVERNMENT", _GID);
         emit newOffice(_officeName, _phoneNumber, _GID);
     }
@@ -89,12 +79,10 @@ contract Main is AccessControl {
         string memory _phoneNumber,
         address _HID
     ) public onlyGoverment {
-        address hospitalAdd = address(
+        hospitalDetails[_HID] = address(
             new Hospital(_hospitalName, _HID, _phoneNumber)
         );
-        hospitalDetails[_HID] = hospitalAdd;
         grantRole("HOSPITAL", _HID);
-        // isHospital[_HID] = true;
         emit newHospital(_hospitalName, _phoneNumber, _HID);
     }
 
@@ -108,7 +96,8 @@ contract Main is AccessControl {
         address _DID,
         string memory _department
     ) public onlyGoverment {
-        address doctorAdd = address(
+
+        doctorDetails[_DID] = address(
             new Doctor(
                 _doctorName,
                 _phoneNumber,
@@ -120,9 +109,7 @@ contract Main is AccessControl {
                 _department
             )
         );
-        doctorDetails[_DID] = doctorAdd;
         grantRole("DOCTOR", _DID);
-        // isDoctor[_DID] = true;
         emit newDoctor(
             _doctorName,
             _phoneNumber,
@@ -139,8 +126,7 @@ contract Main is AccessControl {
         public
         onlyGoverment
     {
-        address patientAdd = address(new Patient(_details, _PID));
-        patientDetails[_PID] = patientAdd;
+        patientDetails[_PID] = address(new Patient(_details, _PID));
 
         grantRole("PATIENT", _PID);
 
@@ -148,18 +134,15 @@ contract Main is AccessControl {
     }
 
 
-// --------------------------------------------------------
-    // Adding to Aprrove List
+
     function addGovernmentOfficetoList(
         string memory _officeName,
         string memory _phoneNumber,
         address _GID
     ) public onlyGoverment {
-        address govOfficeAdd = address(
+        ApproveList.push(Approve(address(
             new Government(_officeName, _phoneNumber, _GID)
-        );
-        
-        ApproveList.push(Approve(govOfficeAdd, _GID, "GOV", block.timestamp));
+        ), _GID, "GOV", block.timestamp));
     }
 
     function addHospitaltoList(
@@ -167,10 +150,9 @@ contract Main is AccessControl {
         string memory _phoneNumber,
         address _HID
     ) public onlyGoverment {
-        address hospitalAdd = address(
+        ApproveList.push(Approve(address(
             new Hospital(_hospitalName, _HID, _phoneNumber)
-        );
-        ApproveList.push(Approve(hospitalAdd, _HID, "HOS", block.timestamp));
+        ), _HID, "HOS", block.timestamp));
     }
 
     function addDoctortoList(
@@ -183,28 +165,16 @@ contract Main is AccessControl {
         address _DID,
         string memory _department
     ) public onlyGoverment {
-        address doctorAdd = address(
-            new Doctor(
-                _doctorName,
-                _phoneNumber,
-                _qualification,
-                _photo,
-                _dob,
-                _HID,
-                _DID,
-                _department
-            )
-        );
-        ApproveList.push(Approve(doctorAdd, _DID, "DOC", block.timestamp));
+        ApproveList.push(Approve( address(new Doctor( _doctorName,_phoneNumber,_qualification, _photo,_dob,_HID, _DID,_department)), _DID, "DOC", block.timestamp));
+        
     }
 
     function addPatienttoList(string memory _details, address _PID)
         public
         onlyGoverment
     {
-        address patientAdd = address(new Patient(_details, _PID));
 
-        ApproveList.push(Approve(patientAdd, _PID, "PAT", block.timestamp));
+        ApproveList.push(Approve(address(new Patient(_details, _PID)), _PID, "PAT", block.timestamp));
     }
 
     function getApproveList() public view returns (Approve[] memory) {
@@ -212,7 +182,6 @@ contract Main is AccessControl {
     }
 
 
-// ---------------------------------------
 function addGovernmentOfficeFromList(
         address _GID
     ) public onlyGoverment {
@@ -222,8 +191,7 @@ function addGovernmentOfficeFromList(
                 governmentDetails[_GID] = ApproveList[i].instanceAdd;
                 delete ApproveList[i];
                 grantRole("GOVERNMENT", _GID);
-                Government gov = Government(governmentDetails[_GID]);
-                emit newOffice(gov.getOfficeName(),gov.getPhoneNumber(), _GID);
+                emit newOffice(Government(governmentDetails[_GID]).getOfficeName(),Government(governmentDetails[_GID]).getPhoneNumber(), _GID);
                 break;
             }
         }
@@ -237,8 +205,7 @@ function addGovernmentOfficeFromList(
                 hospitalDetails[_HID] = ApproveList[i].instanceAdd;
                 delete ApproveList[i];
                 grantRole("HOSPITAL", _HID);
-                Hospital hospital = Hospital(hospitalDetails[_HID]);
-                emit newHospital(hospital.getHospitalName(), hospital.getPhoneNumber(), _HID);
+                emit newHospital(Hospital(hospitalDetails[_HID]).getHospitalName(), Hospital(hospitalDetails[_HID]).getPhoneNumber(), _HID);
                 break;
             }
         }
@@ -252,19 +219,15 @@ function addGovernmentOfficeFromList(
                 doctorDetails[_DID] = ApproveList[i].instanceAdd;
                 delete ApproveList[i];
                 grantRole("DOCTOR", _DID);
-                Doctor doctor = Doctor(doctorDetails[_DID]);
-
-                console.log("hello from addDoctorFromList");
-
                 emit newDoctor(
-                    doctor.getDoctorName(),
-                    doctor.getphoneNumber(),
-                    doctor.getQualification(),
-                    doctor.getPhoto(),
-                    doctor.getDob(),
-                    doctor.getHospital(),
+                    Doctor(doctorDetails[_DID]).getDoctorName(),
+                    Doctor(doctorDetails[_DID]).getphoneNumber(),
+                    Doctor(doctorDetails[_DID]).getQualification(),
+                    Doctor(doctorDetails[_DID]).getPhoto(),
+                    Doctor(doctorDetails[_DID]).getDob(),
+                    Doctor(doctorDetails[_DID]).getHospital(),
                     _DID,
-                    doctor.getDepartment()
+                    Doctor(doctorDetails[_DID]).getDepartment()
                     );
                     break;
                 }
@@ -285,11 +248,6 @@ function addGovernmentOfficeFromList(
             }
         }
     }
-
-
-
-// -------------------------------------------------------
-
 
     function giveReadAccess(address _DID) public onlyPatient {
         Patient(patientDetails[msg.sender]).addDoctor(_DID);
@@ -391,14 +349,13 @@ function addGovernmentOfficeFromList(
         view
         returns (string[6] memory)
     {
-        Doctor doctor = Doctor(doctorDetails[_DID]);
         return [
-            doctor.getDoctorName(),
-            doctor.getphoneNumber(),
-            doctor.getQualification(),
-            doctor.getPhoto(),
-            doctor.getDob(),
-            doctor.getDepartment()
+            Doctor(doctorDetails[_DID]).getDoctorName(),
+            Doctor(doctorDetails[_DID]).getphoneNumber(),
+            Doctor(doctorDetails[_DID]).getQualification(),
+            Doctor(doctorDetails[_DID]).getPhoto(),
+            Doctor(doctorDetails[_DID]).getDob(),
+            Doctor(doctorDetails[_DID]).getDepartment()
         ];
     }
 
@@ -419,8 +376,7 @@ function addGovernmentOfficeFromList(
         view
         returns (string[2] memory)
     {
-        Hospital hospital = Hospital(hospitalDetails[_HID]);
-        return [hospital.getHospitalName(), hospital.getPhoneNumber()];
+        return [Hospital(hospitalDetails[_HID]).getHospitalName(), Hospital(hospitalDetails[_HID]).getPhoneNumber()];
     }
 
     function getHospitalDoctorList(address _HID)
@@ -444,9 +400,10 @@ function addGovernmentOfficeFromList(
         view
         returns (string[2] memory)
     {
-        Government gov = Government(governmentDetails[_GID]);
-        return [gov.getOfficeName(), gov.getPhoneNumber()];
+        return [Government(governmentDetails[_GID]).getOfficeName(), Government(governmentDetails[_GID]).getPhoneNumber()];
     }
+
+    
 
     function isGovernment(address _GID) public view returns (bool) {
         return (hasRole("GOVERNMENT", _GID));
@@ -464,27 +421,38 @@ function addGovernmentOfficeFromList(
         return (hasRole("DOCTOR", _GID));
     }
 
-    modifier onlyGoverment() {
-        // require(isGovernment[msg.sender]);
+
+    function _onlyGoverment() private view {
         require(isGovernment(msg.sender), "Restricted to users.");
+    }
+
+    modifier onlyGoverment() {
+        _onlyGoverment();
         _;
     }
 
-    modifier onlyPatient() {
-        // require(isPatient[msg.sender]);
+    function _onlyPatient() private view{
         require(isPatient(msg.sender), "Restricted to PATIENT.");
+    }
+    modifier onlyPatient() {
+        _onlyPatient();
         _;
     }
 
-    modifier onlyDoctor() {
-        // require(isDoctor[msg.sender]);
+    function _onlyDoctor() private view {
         require(isDoctor(msg.sender), "Restricted to DOCTOR.");
+    }
+    modifier onlyDoctor() {
+        _onlyDoctor();
         _;
     }
 
-    modifier onlyHospital() {
-        // require(isHospital[msg.sender]);
+    function _onlyHospital() private view {
         require(isHospital(msg.sender), "Restricted to HOSPITAL.");
+
+    }
+    modifier onlyHospital() {
+        _onlyHospital();
         _;
     }
 }
