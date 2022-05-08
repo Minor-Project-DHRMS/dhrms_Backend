@@ -23,6 +23,11 @@ contract Patient {
         return details;
     }
 
+
+    function getDetailsForGov() public view returns (string memory)  {
+        return details;
+    }
+
     function getPID() public view returns (address) {
         return PID;
     }
@@ -33,7 +38,7 @@ contract Patient {
     }
 
     function removeDoctor(address _DID) public {
-        for (uint256 i = 0; i < doctorsList.length - 1; i++) {
+        for (uint256 i = 0; i < doctorsList.length-1; i++) {
             if (doctorsList[i] == _DID) {
                 delete doctorsList[i];
                 break;
@@ -56,13 +61,13 @@ contract Patient {
     }
 
     function removeHospital(address _HID) public {
-        for (uint256 i = 0; i < hospitalsList.length - 1; i++) {
+        for (uint256 i = 0; i < hospitalsList.length-1; i++) {
             if (hospitalsList[i] == _HID) {
                 delete hospitalsList[i];
                 break;
             }
         }
-        delete doctors[_HID];
+        delete hospitals[_HID];
     }
 
     function getHospitalsList() public view returns (address[] memory) {

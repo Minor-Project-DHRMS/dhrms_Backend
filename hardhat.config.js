@@ -23,9 +23,16 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 1,
+        runs: 200,
       },
       evmVersion: "byzantium"
     },
   },
+  networks: {
+    hardhat: {
+      allowUnlimitedContractSize: true
+    }
+  },
 };
+
+// allowUnlimitedContractSize 

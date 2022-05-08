@@ -7,14 +7,14 @@ describe("Deployment", () => {
         [deployer, gov2, hospital1, hospital2, doc1, doc2, patient1, patient2] = await ethers.getSigners();
         console.log(`
       
-      Government 1 : ${deployer.address}
-      Government 2 : ${gov2.address}
-      Hospital 1   : ${hospital1.address}
-      Hospital 2   : ${hospital2.address}
-      Doctor 1     : ${doc1.address}
-      Doctor 2     : ${doc2.address}
-      Patient 1    : ${patient1.address}
-      Patient 2    : ${patient2.address}
+        Government 1 : ${deployer.address}
+        Government 2 : ${gov2.address}
+        Hospital 1   : ${hospital1.address}
+        Hospital 2   : ${hospital2.address}
+        Doctor 1     : ${doc1.address}
+        Doctor 2     : ${doc2.address}
+        Patient 1    : ${patient1.address}
+        Patient 2    : ${patient2.address}
       
       `);
 
@@ -25,6 +25,30 @@ describe("Deployment", () => {
 
     it("Sets deployer as the first government Office", async () => {
         expect(await mainContract.isGovernment(deployer.address)).to.be.true;
+    });
+});
+
+describe("Adding new government office", () => {
+    it("Checking event is emitted correctly with added details", async () => {
+        expect(await mainContract.addGovernmentOffice("Hubli-office", "9433387654", gov2.address))
+            .to.emit(mainContract, "newOffice")
+            .withArgs("Hubli-office", "9433387654", gov2.address);
+    });
+    it("Checks newly added government is added to the GOVERNMENT ROLE", async () => {
+        expect(await mainContract.isGovernment(gov2.address)).to.be.true;
+    });
+
+});
+
+describe("Adding new hospital(hospital1)", async () => {
+    it("Checking event is emitted correctly with added details", async () => {
+
+        expect(await mainContract.addHospital("SDM Medical College Dharwad", "9203251212", hospital1.address))
+            .to.emit(mainContract, "newHospital")
+            .withArgs("SDM Medical College Dharwad", "9203251212", hospital1.address);
+    });
+    it("Checks newly added hospital1 is added to the HOSPITAL ROLE", async () => {
+        expect(await mainContract.isHospital(hospital1.address)).to.be.true;
     });
 });
 
@@ -42,67 +66,9 @@ describe("Adding new hospital(hospital2)", async () => {
 });
 
 
-describe("Adding to the Approve List", function () {
-    it("Adding the Government", async function () {
-        await mainContract.addGovernmentOfficetoList("Hubli-office", "9433387654", gov2.address);
-    });
-    it("Adding the Hospital", async function () {
-        await mainContract.addHospitaltoList("SDM Medical College Dharwad", "9203251212", hospital1.address);
-    });
-    it("Adding the Hospital2", async function () {
-        await mainContract.addHospitaltoList("K C General Hospital", "9712091212", hospital2.address);
-    });
-    it("Adding the Doctor", async function () {
-
-        await mainContract.addDoctortoList("Dr.M.N.Rayangoudar", "7611198762", "MBBS", "photo", "01/12/1968", hospital1.address, doc1.address, "Cardiology");
-    });
-    it("Adding the Patient", async function () {
-        await mainContract.addPatienttoList(JSON.stringify(pd), patient1.address);
-    });
-    it("Priniting List", async function () {
-        console.log(await mainContract.getApproveList());
-    });
-});
-
-describe("Checking the Government is added from the approve List", () => {
-    it("Checking event is emitted correctly with added details", async () => {
-        expect(await mainContract.addGovernmentOfficeFromList(gov2.address))
-            .to.emit(mainContract, "newOffice")
-            .withArgs("Hubli-office", "9433387654", gov2.address);
-    });
-    it("Checks newly added government is added to the GOVERNMENT ROLE", async () => {
-        expect(await mainContract.isGovernment(gov2.address)).to.be.true;
-    });
-
-});
-
-describe("Checking the hospital(hospital1) is added from the approve List", async () => {
-    it("Checking event is emitted correctly with added details", async () => {
-
-        expect(await mainContract.addHospitalFromList(hospital1.address))
-            .to.emit(mainContract, "newHospital")
-            .withArgs("SDM Medical College Dharwad", "9203251212", hospital1.address);
-    });
-    it("Checks newly added hospital1 is added to the HOSPITAL ROLE", async () => {
-        expect(await mainContract.isHospital(hospital1.address)).to.be.true;
-    });
-});
-
-describe("Checking the hospital(hospital2) is added from the approve List", async () => {
-    it("Checking event is emitted correctly with added details", async () => {
-
-        expect(await mainContract.addHospitalFromList(hospital2.address))
-            .to.emit(mainContract, "newHospital")
-            .withArgs("K C General Hospital", "9712091212", hospital2.address);
-    });
-    it("Checks newly added hospital1 is added to the HOSPITAL ROLE", async () => {
-        expect(await mainContract.isHospital(hospital2.address)).to.be.true;
-    });
-});
-
-describe("Checking the doctor(doc1) is added from the approve List", () => {
+describe("Adding new doctor(doc1)", () => {
     it("Checking event is emitted correctly with added details", async function () {
-        expect(await mainContract.addDoctorFromList(doc1.address))
+        expect(await mainContract.addDoctor("Dr.M.N.Rayangoudar", "7611198762", "MBBS", "photo", "01/12/1968", hospital1.address, doc1.address, "Cardiology"))
             .to.emit(mainContract, "newDoctor")
             .withArgs("Dr.M.N.Rayangoudar", "7611198762", "MBBS", "photo", "01/12/1968", hospital1.address, doc1.address, "Cardiology");
     });
@@ -111,17 +77,14 @@ describe("Checking the doctor(doc1) is added from the approve List", () => {
     });
 });
 
-describe("Checking the patient(Patient1) is added from the approve List", function () {
+describe("Adding new patient(Patient1)", function () {
     it("Should returns new patient details", async function () {
-        expect(await mainContract.addPatientFromList(patient1.address))
+
+
+        expect(await mainContract.addPatient(JSON.stringify(pd), patient1.address))
             .to.emit(mainContract, "newPatient")
             .withArgs(JSON.stringify(pd), patient1.address);
-    });
-    it("Printing Approve List after Approval", async function () {
-        console.log(await mainContract.getApproveList())
-    });
-    it("Checking newly added Patient is added to the PATIENT ROLE", async function () {
-        expect(await mainContract.isPatient(patient1.address)).to.be.true;
+
     });
 });
 
