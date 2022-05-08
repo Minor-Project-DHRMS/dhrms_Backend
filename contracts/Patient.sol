@@ -23,11 +23,6 @@ contract Patient {
         return details;
     }
 
-
-    function getDetailsForGov() public view returns (string memory)  {
-        return details;
-    }
-
     function getPID() public view returns (address) {
         return PID;
     }
