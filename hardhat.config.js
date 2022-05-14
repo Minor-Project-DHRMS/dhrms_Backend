@@ -24,7 +24,7 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200,
+        runs: 1,
       },
       evmVersion: "byzantium",
     },
@@ -34,11 +34,6 @@ module.exports = {
       url: process.env.STAGING_ALCHEMY_KEY,
       accounts: [process.env.PRIVATE_KEY],
     },
-  },
-  networks: {
-    hardhat: {
-      allowUnlimitedContractSize: true
-    }
   },
 };
 
