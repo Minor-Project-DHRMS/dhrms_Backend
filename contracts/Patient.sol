@@ -67,7 +67,7 @@ contract Patient {
     }
 
     function removeHospital(address _HID) public {
-        if(hospitalsList.length == 1){
+        if((hospitalsList.length == 1) && (hospitalsList[i] == _HID)){
             hospitalsList.pop();
         }
         else{
