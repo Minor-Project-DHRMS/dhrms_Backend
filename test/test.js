@@ -188,6 +188,73 @@ describe("Giving write permission", function () {
 
 });
 
+describe("Retrieving Doctor information", function () {
+    it("Should return particular doctor details", async function () {
+
+        expect(await DHRMSContract.connect(doc1).getDoctorDetails(doc1.address)).to.eql(["Dr.M.N.Rayangoudar", "7611198762", "MBBS", "photo", "01/12/1968", "Cardiology"]);
+
+    });
+
+    it("Should return patient list of particular doctor", async function () {
+
+        console.log(await DHRMSContract.connect(doc1).getPatientList(doc1.address));
+        console.log("Hellloooo")
+        expect(await DHRMSContract.connect(doc1).getPatientList(doc1.address)).to.eql([patient1.address]);
+
+    });
+
+    it("Should return hospital name in which doctor is working", async function () {
+
+        expect(await DHRMSContract.connect(doc1).getDoctorH(doc1.address)).to.eql(hospital1.address);
+
+    });
+
+});
+
+describe("Retrieving hospital information", function () {
+    it("Should return particular hospital details", async function () {
+
+        expect(await DHRMSContract.connect(hospital1).getHospitalDetails(hospital1.address)).to.eql(["SDM Medical College Dharwad", "9203251212"]);
+
+    });
+
+    it("Should return doctor list of particular hospital", async function () {
+
+        expect(await DHRMSContract.connect(hospital1).getHospitalDoctorList(hospital1.address)).to.eql([]);
+
+    });
+
+    it("Should return patient list of particular hospital", async function () {
+
+        expect(await DHRMSContract.connect(hospital1).getHospitalPatientList(hospital1.address)).to.eql([patient1.address]);
+
+    });
+
+});
+
+describe("Retrieving patient information", function () {
+    it("Should return particular patient details", async function () {
+
+        expect(await DHRMSContract.connect(patient1).getPatientDetails(patient1.address)).to.equal(JSON.stringify(pd));
+
+    });
+
+    it("Should return doctors list of particular patient", async function () {
+
+        expect(await DHRMSContract.connect(patient1).getDoctorsList(patient1.address)).to.eql([doc1.address]);
+
+    });
+
+    it("Should return hospital list of particular patient", async function () {
+
+        expect(await DHRMSContract.connect(patient1).getHospitalsList(patient1.address)).to.eql([hospital1.address]);
+
+    });
+
+});
+
+
+
 describe("Removing read permission", function () {
     it("Should returns new doctor ID to which permission reverted", async function () {
 
@@ -239,68 +306,9 @@ describe("Adding records to patient history", function () {
 });
 
 
-describe("Retrieving patient information", function () {
-    it("Should return particular patient details", async function () {
 
-        expect(await DHRMSContract.connect(patient1).getPatientDetails(patient1.address)).to.equal(JSON.stringify(pd));
 
-    });
 
-    it("Should return doctors list of particular patient", async function () {
-
-        expect(await DHRMSContract.connect(patient1).getDoctorsList(patient1.address)).to.eql([doc1.address]);
-
-    });
-
-    it("Should return hospital list of particular patient", async function () {
-
-        expect(await DHRMSContract.connect(patient1).getHospitalsList(patient1.address)).to.eql([hospital1.address]);
-
-    });
-
-});
-
-describe("Retrieving Doctor information", function () {
-    it("Should return particular doctor details", async function () {
-
-        expect(await DHRMSContract.connect(doc1).getDoctorDetails(doc1.address)).to.eql(["Dr.M.N.Rayangoudar", "7611198762", "MBBS", "photo", "01/12/1968", "Cardiology"]);
-
-    });
-
-    it("Should return patient list of particular doctor", async function () {
-
-        expect(await DHRMSContract.connect(doc1).getPatientList(doc1.address)).to.eql([patient1.address]);
-
-    });
-
-    it("Should return hospital name in which doctor is working", async function () {
-
-        expect(await DHRMSContract.connect(doc1).getDoctorH(doc1.address)).to.eql(hospital1.address);
-
-    });
-
-});
-
-describe("Retrieving hospital information", function () {
-    it("Should return particular hospital details", async function () {
-
-        expect(await DHRMSContract.connect(hospital1).getHospitalDetails(hospital1.address)).to.eql(["SDM Medical College Dharwad", "9203251212"]);
-
-    });
-
-    it("Should return doctor list of particular hospital", async function () {
-
-        expect(await DHRMSContract.connect(hospital1).getHospitalDoctorList(hospital1.address)).to.eql([]);
-
-    });
-
-    it("Should return patient list of particular hospital", async function () {
-
-        expect(await DHRMSContract.connect(hospital1).getHospitalPatientList(hospital1.address)).to.eql([patient1.address]);
-
-    });
-
-});
 
 describe("Retrieving Government information", function () {
     it("Should return particular government office details", async function () {

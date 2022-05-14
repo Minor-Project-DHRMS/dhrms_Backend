@@ -67,17 +67,18 @@ contract Patient {
     }
 
     function removeHospital(address _HID) public {
-        if(hospitalsList.length == 1){
+        if((hospitalsList.length == 1) && (hospitalsList[i] == _HID)){
             hospitalsList.pop();
         }
-        for (uint256 i = 0; i < hospitalsList.length; i++) {
-            if (hospitalsList[i] == _HID) {
-                hospitalsList[i] = hospitalsList[hospitalsList.length-1];
-                hospitalsList.pop();
-                break;
+        else{
+            for (uint256 i = 0; i < hospitalsList.length; i++) {
+                if (hospitalsList[i] == _HID) {
+                    hospitalsList[i] = hospitalsList[hospitalsList.length-1];
+                    hospitalsList.pop();
+                    break;
+                }
             }
         }
-        delete hospitals[_HID];
     }
 
     function getHospitalsList() public view returns (address[] memory) {
@@ -96,8 +97,12 @@ contract Patient {
         return recordsHistory;
     }
 
-    modifier onlyAllowed() {
+    function _onlyAllowed() private view {
         require(isDoctor(tx.origin) || isHospital(tx.origin) || (tx.origin == PID), "Restricted to PATIENT.");
+    }
+
+    modifier onlyAllowed() {
+        _onlyAllowed();
         _;
     }
 }
