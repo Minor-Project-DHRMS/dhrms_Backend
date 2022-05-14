@@ -60,12 +60,19 @@ contract Hospital {
     }
 
     function removeDoctor(address _DID) public {
-        for(uint i=0; i < doctorsList.length-1; i++){
-            if(doctorsList[i] == _DID){
-                delete doctorsList[i];
-                break;
+         if(doctorsList.length == 1){
+            doctorsList.pop();
+        }
+        else{
+            for(uint i=0; i < doctorsList.length; i++){
+                if(doctorsList[i] == _DID){
+                    doctorsList[i] = doctorsList[doctorsList.length-1];
+                    doctorsList.pop();
+                    break;
+                }
             }
         }
+        
         delete doctors[_DID];
     }
 
@@ -79,12 +86,19 @@ contract Hospital {
     }
 
     function removePatient(address _PID) public {
-        for(uint i=0; i < patientsList.length-1; i++){
+        if(patientsList.length == 1){
+            patientsList.pop();
+        }
+        else{
+            for(uint i=0; i < patientsList.length; i++){
             if(patientsList[i] == _PID){
-                delete doctorsList[i];
+                patientsList[i] = patientsList[patientsList.length-1];
+                patientsList.pop();
                 break;
             }
         }
+        }
+        
         delete patients[_PID];
     }
 
@@ -115,11 +129,16 @@ contract Hospital {
     }
 
     function removeReport(address _PID) public {
-
-        for(uint i=0; i < uplaodQueue.length; i++){
-            if(uplaodQueue[i].PID == _PID){
-                delete uplaodQueue[i];
-                break;
+        if(uplaodQueue.length == 1){
+            uplaodQueue.pop();
+        }
+        else{
+            for(uint i=0; i < uplaodQueue.length; i++){
+                if(uplaodQueue[i].PID == _PID){
+                    uplaodQueue[i] = uplaodQueue[uplaodQueue.length-1];
+                    uplaodQueue.pop();
+                    break;
+                }
             }
         }
     }

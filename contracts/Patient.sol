@@ -37,12 +37,19 @@ contract Patient {
     }
 
     function removeDoctor(address _DID) public {
-        for (uint256 i = 0; i < doctorsList.length-1; i++) {
-            if (doctorsList[i] == _DID) {
-                delete doctorsList[i];
-                break;
+        if(doctorsList.length == 1){
+            doctorsList.pop();
+        }
+        else{
+            for (uint256 i = 0; i < doctorsList.length; i++) {
+                if (doctorsList[i] == _DID) {
+                    doctorsList[i] = doctorsList[doctorsList.length-1];
+                    doctorsList.pop();
+                    break;
+                }
             }
         }
+        
         delete doctors[_DID];
     }
 
@@ -60,13 +67,18 @@ contract Patient {
     }
 
     function removeHospital(address _HID) public {
-        for (uint256 i = 0; i < hospitalsList.length-1; i++) {
-            if (hospitalsList[i] == _HID) {
-                delete hospitalsList[i];
-                break;
+        if(hospitalsList.length == 1){
+            hospitalsList.pop();
+        }
+        else{
+            for (uint256 i = 0; i < hospitalsList.length; i++) {
+                if (hospitalsList[i] == _HID) {
+                    hospitalsList[i] = hospitalsList[hospitalsList.length-1];
+                    hospitalsList.pop();
+                    break;
+                }
             }
         }
-        delete hospitals[_HID];
     }
 
     function getHospitalsList() public view returns (address[] memory) {
@@ -85,8 +97,12 @@ contract Patient {
         return recordsHistory;
     }
 
-    modifier onlyAllowed() {
+    function _onlyAllowed() private view {
         require(isDoctor(tx.origin) || isHospital(tx.origin) || (tx.origin == PID), "Restricted to PATIENT.");
+    }
+
+    modifier onlyAllowed() {
+        _onlyAllowed();
         _;
     }
 }

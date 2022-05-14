@@ -104,14 +104,22 @@ contract Doctor {
     }
 
     function removePatient(address _PID) public {
+
         delete patients[_PID];
 
-        for (uint256 i = 0; i < patientlist.length-1; i++) {
-            if (patientlist[i] == _PID) {
-                delete patientlist[i];
-                break;
+        if(patientlist.length == 1){
+            patientlist.pop();
+        }
+        else{
+            for (uint256 i = 0; i < patientlist.length-1; i++) {
+                if (patientlist[i] == _PID) {
+                    patientlist[i] =  patientlist[patientlist.length-1];
+                    patientlist.pop();
+                    break;
+                }
             }
         }
+        
     }
 
     function getPatientList() public view returns (address[] memory) {
