@@ -452,6 +452,52 @@ contract ApproveDetails {
         return ApproveList;
     }
 
+    function getPatientDetails(address _instanceAddress)
+        public
+        view
+        returns (string memory)
+    {
+        return Patient(_instanceAddress).getDetails();
+    }
+
+    function getDoctorDetails(address _instanceAddress)
+        public
+        view
+        returns (string[6] memory)
+    {
+        return [
+            Doctor(_instanceAddress).getDoctorName(),
+            Doctor(_instanceAddress).getphoneNumber(),
+            Doctor(_instanceAddress).getQualification(),
+            Doctor(_instanceAddress).getPhoto(),
+            Doctor(_instanceAddress).getDob(),
+            Doctor(_instanceAddress).getDepartment()
+        ];
+    }
+
+    function getHospitalDetails(address _instanceAddress)
+        public
+        view
+        returns (string[2] memory)
+    {
+        return [
+            Hospital(_instanceAddress).getHospitalName(),
+            Hospital(_instanceAddress).getPhoneNumber()
+        ];
+    }
+
+    function getGovernmentDetails(address _instanceAddress)
+        public
+        view
+        returns (string[2] memory)
+    {
+        return [
+            Government(_instanceAddress).getOfficeName(),
+            Government(_instanceAddress).getPhoneNumber()
+        ];
+    }
+
+
     function approve(address _userAdd) public {
         for (uint256 i = 0; i < ApproveList.length; i++) {
             if (ApproveList[i].userAdd == _userAdd) {
@@ -502,6 +548,16 @@ contract ApproveDetails {
                     ApproveList[i] = ApproveList[ApproveList.length - 1];
                     ApproveList.pop();
                 }
+            }
+        }
+    }
+    function disApprove(address _userAdd) public {
+        for (uint256 i = 0; i < ApproveList.length; i++) {
+            if (ApproveList[i].userAdd == _userAdd) {
+                if (ApproveList.length != 1) {
+                    ApproveList[i] = ApproveList[ApproveList.length - 1];
+                } 
+                ApproveList.pop();
             }
         }
     }
