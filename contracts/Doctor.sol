@@ -104,19 +104,15 @@ contract Doctor {
     }
 
     function removePatient(address _PID) public {
-
-        delete patients[_PID];
-
-        if(patientlist.length == 1){
-            patientlist.pop();
-        }
-        else{
-            for (uint256 i = 0; i < patientlist.length-1; i++) {
-                if (patientlist[i] == _PID) {
+        
+        for (uint256 i = 0; i < patientlist.length-1; i++) {
+            if (patientlist[i] == _PID) {
+                if(patientlist.length != 1){
                     patientlist[i] =  patientlist[patientlist.length-1];
-                    patientlist.pop();
-                    break;
                 }
+                delete patients[_PID];
+                patientlist.pop();
+                break;
             }
         }
         
