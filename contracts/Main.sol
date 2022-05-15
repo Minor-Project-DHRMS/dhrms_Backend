@@ -385,10 +385,14 @@ contract ApproveDetails {
         uint256 timestamp;
     }
 
-    address DHRMS_CONTRACT_ADDRESS; 
 
-    constructor(address _DHRMS_CONTRACT_ADDRESS) {
+
+    address DHRMS_CONTRACT_ADDRESS; 
+    address RBAC_CONTRACT_ADDRESS; 
+
+    constructor(address _DHRMS_CONTRACT_ADDRESS, address _RBAC_CONTRACT_ADDRESS) {
         DHRMS_CONTRACT_ADDRESS = _DHRMS_CONTRACT_ADDRESS;
+        RBAC_CONTRACT_ADDRESS = _RBAC_CONTRACT_ADDRESS;
     }
 
 
@@ -448,13 +452,14 @@ contract ApproveDetails {
         ApproveList.push(Approve(patientAdd, _PID, "PAT", block.timestamp));
     }
 
-    function getApproveList() public view returns (Approve[] memory) {
+    function getApproveList() public view onlyGoverment returns (Approve[] memory) {
         return ApproveList;
     }
 
     function getPatientDetails(address _instanceAddress)
         public
         view
+        onlyGoverment
         returns (string memory)
     {
         return Patient(_instanceAddress).getDetails();
@@ -463,6 +468,7 @@ contract ApproveDetails {
     function getDoctorDetails(address _instanceAddress)
         public
         view
+        onlyGoverment
         returns (string[6] memory)
     {
         return [
@@ -478,6 +484,7 @@ contract ApproveDetails {
     function getHospitalDetails(address _instanceAddress)
         public
         view
+        onlyGoverment
         returns (string[2] memory)
     {
         return [
@@ -489,6 +496,7 @@ contract ApproveDetails {
     function getGovernmentDetails(address _instanceAddress)
         public
         view
+        onlyGoverment
         returns (string[2] memory)
     {
         return [
@@ -498,7 +506,7 @@ contract ApproveDetails {
     }
 
 
-    function approve(address _userAdd) public {
+    function approve(address _userAdd) public onlyGoverment{
         for (uint256 i = 0; i < ApproveList.length; i++) {
             if (ApproveList[i].userAdd == _userAdd) {
                 if (
@@ -551,7 +559,8 @@ contract ApproveDetails {
             }
         }
     }
-    function disApprove(address _userAdd) public {
+
+    function disApprove(address _userAdd) public onlyGoverment{
         for (uint256 i = 0; i < ApproveList.length; i++) {
             if (ApproveList[i].userAdd == _userAdd) {
                 if (ApproveList.length != 1) {
@@ -560,5 +569,15 @@ contract ApproveDetails {
                 ApproveList.pop();
             }
         }
+    }
+
+    function _onlyGoverment() private view {
+        console.log(tx.origin);
+        require(ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS).isGovernment(tx.origin), "Restricted to users.");
+    }
+
+    modifier onlyGoverment() {
+        _onlyGoverment();
+        _;
     }
 }
