@@ -60,20 +60,17 @@ contract Hospital {
     }
 
     function removeDoctor(address _DID) public {
-         if(doctorsList.length == 1){
-            doctorsList.pop();
-        }
-        else{
-            for(uint i=0; i < doctorsList.length; i++){
-                if(doctorsList[i] == _DID){
+         
+        for(uint i=0; i < doctorsList.length; i++){
+            if(doctorsList[i] == _DID){
+                if(doctorsList.length != 1){
                     doctorsList[i] = doctorsList[doctorsList.length-1];
-                    doctorsList.pop();
-                    break;
                 }
+                doctorsList.pop();
+                delete doctors[_DID];
+                break;
             }
         }
-        
-        delete doctors[_DID];
     }
 
     function getDoctorsList() public view returns(address[] memory){
@@ -86,20 +83,18 @@ contract Hospital {
     }
 
     function removePatient(address _PID) public {
-        if(patientsList.length == 1){
-            patientsList.pop();
-        }
-        else{
-            for(uint i=0; i < patientsList.length; i++){
+        
+        for(uint i=0; i < patientsList.length; i++){
             if(patientsList[i] == _PID){
-                patientsList[i] = patientsList[patientsList.length-1];
+                if(patientsList.length != 1){
+                    patientsList[i] = patientsList[patientsList.length-1];
+                }
                 patientsList.pop();
+                delete patients[_PID];
                 break;
             }
         }
-        }
         
-        delete patients[_PID];
     }
 
     function getPatientsList() public view returns(address[] memory){
@@ -129,16 +124,14 @@ contract Hospital {
     }
 
     function removeReport(address _PID) public {
-        if(uplaodQueue.length == 1){
-            uplaodQueue.pop();
-        }
-        else{
-            for(uint i=0; i < uplaodQueue.length; i++){
-                if(uplaodQueue[i].PID == _PID){
+        
+        for(uint i=0; i < uplaodQueue.length; i++){
+            if(uplaodQueue[i].PID == _PID){
+                if(uplaodQueue.length != 1){
                     uplaodQueue[i] = uplaodQueue[uplaodQueue.length-1];
-                    uplaodQueue.pop();
-                    break;
                 }
+                uplaodQueue.pop();
+                break;
             }
         }
     }

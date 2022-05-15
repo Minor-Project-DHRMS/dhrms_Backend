@@ -37,20 +37,19 @@ contract Patient {
     }
 
     function removeDoctor(address _DID) public {
-        if(doctorsList.length == 1){
-            doctorsList.pop();
-        }
-        else{
-            for (uint256 i = 0; i < doctorsList.length; i++) {
-                if (doctorsList[i] == _DID) {
+        
+        for (uint256 i = 0; i < doctorsList.length; i++) {
+            if (doctorsList[i] == _DID) {
+                if(doctorsList.length != 1){
                     doctorsList[i] = doctorsList[doctorsList.length-1];
-                    doctorsList.pop();
-                    break;
                 }
+                doctorsList.pop();
+                delete doctors[_DID];
+                break;
             }
         }
         
-        delete doctors[_DID];
+        
     }
 
     function getDoctorsList() public view returns (address[] memory) {
@@ -67,16 +66,14 @@ contract Patient {
     }
 
     function removeHospital(address _HID) public {
-        if((hospitalsList.length == 1) && (hospitalsList[i] == _HID)){
-            hospitalsList.pop();
-        }
-        else{
-            for (uint256 i = 0; i < hospitalsList.length; i++) {
-                if (hospitalsList[i] == _HID) {
+        for (uint256 i = 0; i < hospitalsList.length; i++) {
+            if (hospitalsList[i] == _HID) {
+                if(doctorsList.length != 1){
                     hospitalsList[i] = hospitalsList[hospitalsList.length-1];
-                    hospitalsList.pop();
-                    break;
                 }
+                hospitalsList.pop();
+                delete hospitals[_HID];
+                break;
             }
         }
     }
