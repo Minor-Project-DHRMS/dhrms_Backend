@@ -93,7 +93,7 @@ contract DHRMS_DOC{
             Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(_DID)).getDepartment()
         ];
     }
-
+    
     function getDoctorH(address _DID) public view returns (address) {
         return Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(_DID)).getHospital();
     }

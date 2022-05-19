@@ -108,56 +108,30 @@ contract DHRMS_PAT{
     }
 
 
-
-
-
-
-
-    function _onlyGoverment() private view {
-        require(
-            ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS).isGovernment(tx.origin),
-            "Restricted to users."
-        );
-    }
-
     modifier onlyGoverment() {
-        _onlyGoverment();
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyGoverment();
         _;
     }
 
-    function _onlyPatient() private view {
-        require(
-            ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS).isPatient(tx.origin),
-            "Restricted to PATIENT."
-        );
-    }
+    
 
     modifier onlyPatient() {
-        _onlyPatient();
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyPatient();
         _;
+        
     }
 
-    function _onlyDoctor() private view {
-        require(
-            ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS).isDoctor(tx.origin),
-            "Restricted to DOCTOR."
-        );
-    }
+    
 
     modifier onlyDoctor() {
-        _onlyDoctor();
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyDoctor();
         _;
     }
 
-    function _onlyHospital() private view {
-        require(
-            ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS).isHospital(tx.origin),
-            "Restricted to HOSPITAL."
-        );
-    }
+    
 
     modifier onlyHospital() {
-        _onlyHospital();
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyHospital();
         _;
     }
 }

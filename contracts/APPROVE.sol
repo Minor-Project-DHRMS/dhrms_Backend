@@ -20,7 +20,6 @@ contract ApproveDetails {
         uint256 timestamp;
     }
 
-    address STORAGE_CONTRACT_ADDRESS;
     address DHRMS_GOV_CONTRACT_ADDRESS;
     address DHRMS_PAT_CONTRACT_ADDRESS;
     address DHRMS_DOC_CONTRACT_ADDRESS;
@@ -37,107 +36,12 @@ contract ApproveDetails {
 
     Approve[] private ApproveList;
 
-    function addGovernmentOfficetoList(
-        string memory _officeName,
-        string memory _phoneNumber,
-        address _GID
-    ) public {
-        address govOfficeAdd = address(
-            new Government(_officeName, _phoneNumber, _GID)
-        );
-
-        ApproveList.push(Approve(govOfficeAdd, _GID, "GOV", block.timestamp));
-    }
-
-    function addHospitaltoList(
-        string memory _hospitalName,
-        string memory _phoneNumber,
-        address _HID
-    ) public {
-        address hospitalAdd = address(
-            new Hospital(_hospitalName, _HID, _phoneNumber)
-        );
-        ApproveList.push(Approve(hospitalAdd, _HID, "HOS", block.timestamp));
-    }
-
-    function addDoctortoList(
-        string memory _doctorName,
-        string memory _phoneNumber,
-        string memory _qualification,
-        string memory _photo,
-        string memory _dob,
-        address _HID,
-        address _DID,
-        string memory _department
-    ) public {
-        address doctorAdd = address(
-            new Doctor(
-                _doctorName,
-                _phoneNumber,
-                _qualification,
-                _photo,
-                _dob,
-                _HID,
-                _DID,
-                _department
-            )
-        );
-        ApproveList.push(Approve(doctorAdd, _DID, "DOC", block.timestamp));
-    }
-
-    function addPatienttoList(string memory _details, address _PID) public {
-        address patientAdd = address(new Patient(_details, _PID));
-
-        ApproveList.push(Approve(patientAdd, _PID, "PAT", block.timestamp));
-    }
-
     function getApproveList() public view returns (Approve[] memory) {
         return ApproveList;
     }
 
-    function getPatientDetails(address _instanceAddress)
-        public
-        view
-        returns (string memory)
-    {
-        return Patient(_instanceAddress).getDetails();
-    }
-
-    function getDoctorDetails(address _instanceAddress)
-        public
-        view
-        returns (string[6] memory)
-    {
-        return [
-            Doctor(_instanceAddress).getDoctorName(),
-            Doctor(_instanceAddress).getphoneNumber(),
-            Doctor(_instanceAddress).getQualification(),
-            Doctor(_instanceAddress).getPhoto(),
-            Doctor(_instanceAddress).getDob(),
-            Doctor(_instanceAddress).getDepartment()
-        ];
-    }
-
-    function getHospitalDetails(address _instanceAddress)
-        public
-        view
-        returns (string[2] memory)
-    {
-        return [
-            Hospital(_instanceAddress).getHospitalName(),
-            Hospital(_instanceAddress).getPhoneNumber()
-        ];
-    }
-
-    function getGovernmentDetails(address _instanceAddress)
-        public
-        view
-        returns (string[2] memory)
-    {
-        return [
-            Government(_instanceAddress).getOfficeName(),
-            Government(_instanceAddress).getPhoneNumber()
-        ];
+    function addtoApproveList(address instAdd, address userAdd, string memory userType) public{
+        ApproveList.push(Approve(instAdd, userAdd, userType, block.timestamp));
     }
 
     function approve(address _userAdd) public {
@@ -203,5 +107,122 @@ contract ApproveDetails {
                 ApproveList.pop();
             }
         }
+    }
+}
+
+contract ApproveDetails2{
+
+    address APPROVE_DETAILS_CONTRACT_ADDRESS;
+    constructor(address _APPROVE_DETAILS_CONTRACT_ADDRESS){
+        APPROVE_DETAILS_CONTRACT_ADDRESS = _APPROVE_DETAILS_CONTRACT_ADDRESS;
+    }
+    function addGovernmentOfficetoList(
+        string memory _officeName,
+        string memory _phoneNumber,
+        address _GID
+    ) public {
+        address govOfficeAdd = address(
+            new Government(_officeName, _phoneNumber, _GID)
+        );
+
+        ApproveDetails(APPROVE_DETAILS_CONTRACT_ADDRESS).addtoApproveList(govOfficeAdd, _GID, "GOV");
+    }
+
+    function addHospitaltoList(
+        string memory _hospitalName,
+        string memory _phoneNumber,
+        address _HID
+    ) public {
+        address hospitalAdd = address(
+            new Hospital(_hospitalName, _HID, _phoneNumber)
+        );
+        ApproveDetails(APPROVE_DETAILS_CONTRACT_ADDRESS).addtoApproveList(hospitalAdd, _HID, "HOS");
+    }
+
+    function addDoctortoList(
+        string memory _doctorName,
+        string memory _phoneNumber,
+        string memory _qualification,
+        string memory _photo,
+        string memory _dob,
+        address _HID,
+        address _DID,
+        string memory _department
+    ) public {
+        address doctorAdd = address(
+            new Doctor(
+                _doctorName,
+                _phoneNumber,
+                _qualification,
+                _photo,
+                _dob,
+                _HID,
+                _DID,
+                _department
+            )
+        );
+        ApproveDetails(APPROVE_DETAILS_CONTRACT_ADDRESS).addtoApproveList(doctorAdd, _DID, "DOC");
+
+    }
+
+    function addPatienttoList(string memory _details, address _PID) public {
+        address patientAdd = address(new Patient(_details, _PID));
+        
+        ApproveDetails(APPROVE_DETAILS_CONTRACT_ADDRESS).addtoApproveList(patientAdd, _PID, "PAT");
+
+    }
+
+    // function getApproveList() public view returns (ApproveDetails.Approve[] memory) {
+    //     return ApproveDetails(APPROVE_DETAILS_CONTRACT_ADDRESS).ApproveList();
+    // }
+
+    function getPatientDetails(address _instanceAddress)
+        public
+        view
+        returns (string memory)
+    {
+        return Patient(_instanceAddress).getDetails();
+    }
+
+    function getDoctorDetails(address _instanceAddress)
+        public
+        view
+        returns (string[6] memory)
+    {
+        return [
+            Doctor(_instanceAddress).getDoctorName(),
+            Doctor(_instanceAddress).getphoneNumber(),
+            Doctor(_instanceAddress).getQualification(),
+            Doctor(_instanceAddress).getPhoto(),
+            Doctor(_instanceAddress).getDob(),
+            Doctor(_instanceAddress).getDepartment()
+        ];
+    }
+
+    function getDoctorH(address _instanceAddress) public view returns (address) {
+        return Doctor(_instanceAddress).getHospital();
+    }
+
+
+    function getHospitalDetails(address _instanceAddress)
+        public
+        view
+        returns (string[2] memory)
+    {
+        return [
+            Hospital(_instanceAddress).getHospitalName(),
+            Hospital(_instanceAddress).getPhoneNumber()
+        ];
+    }
+
+    function getGovernmentDetails(address _instanceAddress)
+        public
+        view
+        returns (string[2] memory)
+    {
+        return [
+            Government(_instanceAddress).getOfficeName(),
+            Government(_instanceAddress).getPhoneNumber()
+        ];
     }
 }

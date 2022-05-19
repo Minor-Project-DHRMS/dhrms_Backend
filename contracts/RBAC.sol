@@ -45,29 +45,29 @@ contract ROLE_BASED_ACCESS is AccessControl {
         return (hasRole("GOVERNMENT", _GID));
     }
 
-    function isPatient(address _GID) public view returns (bool) {
-        return (hasRole("PATIENT", _GID));
+    function isPatient(address _PID) public view returns (bool) {
+        return (hasRole("PATIENT", _PID));
     }
 
     function isHospital(address _GID) public view returns (bool) {
         return (hasRole("HOSPITAL", _GID));
     }
 
-    function isDoctor(address _GID) public view returns (bool) {
-        return (hasRole("DOCTOR", _GID));
+    function isDoctor(address _DID) public view returns (bool) {
+        return (hasRole("DOCTOR", _DID));
     }
 
     function _onlyGoverment() public view {
         require(
             hasRole("GOVERNMENT", tx.origin),
-            "Restricted to users."
+            "Restricted only to Governments."
         );
     }
 
     function _onlyPatient() public view {
         require(
             hasRole("PATIENT", tx.origin),
-            "Restricted to PATIENT."
+            "Restricted only to PATIENT."
         );
     }
 
@@ -75,7 +75,7 @@ contract ROLE_BASED_ACCESS is AccessControl {
     function _onlyDoctor() public view {
         require(
             hasRole("DOCTOR", tx.origin),
-            "Restricted to DOCTOR."
+            "Restricted only to DOCTOR."
         );
     }
 
@@ -83,7 +83,7 @@ contract ROLE_BASED_ACCESS is AccessControl {
     function _onlyHospital() public view {
         require(
             hasRole("HOSPITAL", tx.origin),
-            "Restricted to HOSPITAL."
+            "Restricted only to HOSPITAL."
         );
     }
 }
