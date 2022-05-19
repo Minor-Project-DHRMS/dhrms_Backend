@@ -1,0 +1,70 @@
+
+import "contracts/STORAGE.sol";
+import "contracts/Government.sol";
+// import "contracts/RBAC.sol";
+
+
+contract DHRMS_GOV{
+    address STORAGE_CONTRACT_ADDRESS;
+    address RBAC_CONTRACT_ADDRESS;
+
+    event newOffice(string officeName, string _phoneNumber, address _GID);
+
+
+
+    function addGovernmentOffice(
+        string memory _officeName,
+        string memory _phoneNumber,
+        address _GID
+    ) public onlyGoverment {
+        STORAGE(STORAGE_CONTRACT_ADDRESS).governmentDetails[_GID] = address(
+            new Government(_officeName, _phoneNumber, _GID)
+        );
+
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS).grantRoleAccessControl(
+            "GOVERNMENT",
+            _GID
+        );
+        emit newOffice(_officeName, _phoneNumber, _GID);
+    }
+
+
+    function getGovernmentDetails(address _GID)
+        public
+        view
+        returns (string[2] memory)
+    {
+        return [
+            Government(STORAGE(STORAGE_CONTRACT_ADDRESS).governmentDetails[_GID]).getOfficeName(),
+            Government(STORAGE(STORAGE_CONTRACT_ADDRESS).governmentDetails[_GID]).getPhoneNumber()
+        ];
+    }
+
+
+    modifier onlyGoverment() {
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyGoverment();
+        _;
+    }
+
+    
+
+    modifier onlyPatient() {
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyPatient();
+        _;
+    }
+
+    
+
+    modifier onlyDoctor() {
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyDoctor();
+        _;
+    }
+
+    
+
+    modifier onlyHospital() {
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyHospital();
+        _;
+    }
+
+}
