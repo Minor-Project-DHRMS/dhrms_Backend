@@ -57,14 +57,14 @@ contract ROLE_BASED_ACCESS is AccessControl {
         return (hasRole("DOCTOR", _GID));
     }
 
-    function _onlyGoverment() private view {
+    function _onlyGoverment() public view {
         require(
             hasRole("GOVERNMENT", tx.origin),
             "Restricted to users."
         );
     }
 
-    function _onlyPatient() private view {
+    function _onlyPatient() public view {
         require(
             hasRole("PATIENT", tx.origin),
             "Restricted to PATIENT."
@@ -72,7 +72,7 @@ contract ROLE_BASED_ACCESS is AccessControl {
     }
 
 
-    function _onlyDoctor() private view {
+    function _onlyDoctor() public view {
         require(
             hasRole("DOCTOR", tx.origin),
             "Restricted to DOCTOR."
@@ -80,7 +80,7 @@ contract ROLE_BASED_ACCESS is AccessControl {
     }
 
 
-    function _onlyHospital() private view {
+    function _onlyHospital() public view {
         require(
             hasRole("HOSPITAL", tx.origin),
             "Restricted to HOSPITAL."

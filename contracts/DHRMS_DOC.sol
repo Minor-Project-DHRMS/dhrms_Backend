@@ -13,7 +13,7 @@ contract DHRMS_DOC{
 
     constructor(address _STORAGE_CONTRACT_ADDRESS, address _RBAC_CONTRACT_ADDRESS) {
         STORAGE_CONTRACT_ADDRESS = _STORAGE_CONTRACT_ADDRESS;
-        RBAC_CONTRACT_ADDRESS = RBAC_CONTRACT_ADDRESS;
+        RBAC_CONTRACT_ADDRESS = _RBAC_CONTRACT_ADDRESS;
     }
 
     event newDoctor(
@@ -37,7 +37,7 @@ contract DHRMS_DOC{
         address _DID,
         string memory _department
     ) public onlyGoverment {
-        STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails[_DID] = address(
+        STORAGE(STORAGE_CONTRACT_ADDRESS).addDoctorDetails(_DID,address(
             new Doctor(
                 _doctorName,
                 _phoneNumber,
@@ -48,7 +48,7 @@ contract DHRMS_DOC{
                 _DID,
                 _department
             )
-        );
+        ));
         ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS).grantRoleAccessControl(
             "DOCTOR",
             _DID
@@ -73,8 +73,8 @@ contract DHRMS_DOC{
         public
         onlyDoctor
     {
-        address _HID = Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails[msg.sender]).getHospital();
-        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails[_HID]).addToUplaodQueue(_file, _PID, _HID);
+        address _HID = Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(msg.sender)).getHospital();
+        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(_HID)).addToUplaodQueue(_file, _PID, _HID);
         emit newRecordForUpload(_file, _PID);
     }
 
@@ -85,17 +85,17 @@ contract DHRMS_DOC{
         returns (string[6] memory)
     {
         return [
-            Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails[_DID]).getDoctorName(),
-            Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails[_DID]).getphoneNumber(),
-            Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails[_DID]).getQualification(),
-            Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails[_DID]).getPhoto(),
-            Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails[_DID]).getDob(),
-            Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails[_DID]).getDepartment()
+            Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(_DID)).getDoctorName(),
+            Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(_DID)).getphoneNumber(),
+            Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(_DID)).getQualification(),
+            Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(_DID)).getPhoto(),
+            Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(_DID)).getDob(),
+            Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(_DID)).getDepartment()
         ];
     }
 
     function getDoctorH(address _DID) public view returns (address) {
-        return Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails[_DID]).getHospital();
+        return Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(_DID)).getHospital();
     }
 
 
@@ -104,7 +104,7 @@ contract DHRMS_DOC{
         view
         returns (address[] memory)
     {
-        return Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails[_DID]).getPatientList();
+        return Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(_DID)).getPatientList();
     }
 
 

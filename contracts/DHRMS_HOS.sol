@@ -16,7 +16,7 @@ contract DHRMS_HOS{
 
     constructor(address _STORAGE_CONTRACT_ADDRESS, address _RBAC_CONTRACT_ADDRESS) {
         STORAGE_CONTRACT_ADDRESS = _STORAGE_CONTRACT_ADDRESS;
-        RBAC_CONTRACT_ADDRESS = RBAC_CONTRACT_ADDRESS;
+        RBAC_CONTRACT_ADDRESS = _RBAC_CONTRACT_ADDRESS;
     }
 
     event newHospital(string HospitalName, string ph_no, address HID);
@@ -29,9 +29,9 @@ contract DHRMS_HOS{
         string memory _phoneNumber,
         address _HID
     ) public onlyGoverment {
-        STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails[_HID] = address(
+        STORAGE(STORAGE_CONTRACT_ADDRESS).addHospitalDetails(_HID,address(
             new Hospital(_hospitalName, _HID, _phoneNumber)
-        );
+        ));
         ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS).grantRoleAccessControl(
             "HOSPITAL",
             _HID
@@ -46,7 +46,7 @@ contract DHRMS_HOS{
         address _PID,
         address _HID
     ) public onlyHospital {
-        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails[msg.sender]).addToUplaodQueue(
+        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(msg.sender)).addToUplaodQueue(
             _file,
             _PID,
             _HID
@@ -59,8 +59,8 @@ contract DHRMS_HOS{
         public
         onlyHospital
     {
-        Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails[_PID]).addrecordsHistory(_CID);
-        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails[msg.sender]).removeReport(_PID);
+        Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(_PID)).addrecordsHistory(_CID);
+        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(msg.sender)).removeReport(_PID);
     }
 
     function getHospitalDoctorList(address _HID)
@@ -68,7 +68,7 @@ contract DHRMS_HOS{
         view
         returns (address[] memory)
     {
-        return Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails[_HID]).getDoctorsList();
+        return Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(_HID)).getDoctorsList();
     }
 
     function getHospitalDetails(address _HID)
@@ -77,8 +77,8 @@ contract DHRMS_HOS{
         returns (string[2] memory)
     {
         return [
-            Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails[_HID]).getHospitalName(),
-            Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails[_HID]).getPhoneNumber()
+            Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(_HID)).getHospitalName(),
+            Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(_HID)).getPhoneNumber()
         ];
     }
 
@@ -87,7 +87,7 @@ contract DHRMS_HOS{
         view
         returns (address[] memory)
     {
-        return Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails[_HID]).getPatientsList();
+        return Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(_HID)).getPatientsList();
     }
 
 

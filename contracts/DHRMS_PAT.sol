@@ -12,7 +12,7 @@ contract DHRMS_PAT{
 
     constructor(address _STORAGE_CONTRACT_ADDRESS, address _RBAC_CONTRACT_ADDRESS) {
         STORAGE_CONTRACT_ADDRESS = _STORAGE_CONTRACT_ADDRESS;
-        RBAC_CONTRACT_ADDRESS = RBAC_CONTRACT_ADDRESS;
+        RBAC_CONTRACT_ADDRESS = _RBAC_CONTRACT_ADDRESS;
     }
 
     event newPatient(string _details, address _PID);
@@ -27,37 +27,39 @@ contract DHRMS_PAT{
         public
         onlyGoverment
     {
-        STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(_PID) = address(new Patient(_details, _PID));
+        STORAGE(STORAGE_CONTRACT_ADDRESS).addPatientDetails(_PID,address(new Patient(_details, _PID))
+        );
         ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS).grantRoleAccessControl(
             "PATIENT",
             _PID
         );
+        // STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(_PID) = ;
         emit newPatient(_details, _PID);
     }
 
     function giveReadAccess(address _DID) public onlyPatient {
-        Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails[msg.sender]).addDoctor(_DID);
-        Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails[_DID]).addPatient(msg.sender);
+        Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(msg.sender)).addDoctor(_DID);
+        Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(_DID)).addPatient(msg.sender);
         emit newReadAccess(_DID);
     }
 
 
     function giveWriteAccess(address _HID) public onlyPatient {
-        Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails[msg.sender]).addHospital(_HID);
-        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails[_HID]).addPatient(msg.sender);
+        Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(msg.sender)).addHospital(_HID);
+        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(_HID)).addPatient(msg.sender);
         emit newWriteAccess(_HID);
     }
 
 
     function removeReadAccess(address _DID) public onlyPatient {
-        Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails[msg.sender]).removeDoctor(_DID);
-        Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails[_DID]).removePatient(msg.sender);
+        Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(msg.sender)).removeDoctor(_DID);
+        Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(_DID)).removePatient(msg.sender);
         emit removeReadAccessDoctor(_DID);
     }
 
     function removeWriteAccess(address _HID) public onlyPatient {
-        Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails[msg.sender]).removeHospital(_HID);
-        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails[_HID]).removePatient(msg.sender);
+        Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(msg.sender)).removeHospital(_HID);
+        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(_HID)).removePatient(msg.sender);
         emit removeWriteAccessHospital(_HID);
     }
 
@@ -67,7 +69,7 @@ contract DHRMS_PAT{
         view
         returns (address[] memory)
     {
-        return Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails[_PID]).getDoctorsList();
+        return Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(_PID)).getDoctorsList();
     }
 
     function getHospitalsList(address _PID)
@@ -75,7 +77,7 @@ contract DHRMS_PAT{
         view
         returns (address[] memory)
     {
-        return Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails[_PID]).getHospitalsList();
+        return Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(_PID)).getHospitalsList();
     }
 
 
@@ -84,7 +86,7 @@ contract DHRMS_PAT{
         view
         returns (string[] memory)
     {
-        return Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails[_PID]).getrecordsHistory();
+        return Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(_PID)).getrecordsHistory();
     }
 
 
@@ -93,7 +95,7 @@ contract DHRMS_PAT{
         view
         returns (string memory)
     {
-        return Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails[_PID]).getDetails();
+        return Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(_PID)).getDetails();
     }
 
     function getPatientDetailsForGov(address _PID)
@@ -102,7 +104,7 @@ contract DHRMS_PAT{
         onlyGoverment
         returns (string memory)
     {
-        return Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails[_PID]).getDetails();
+        return Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(_PID)).getDetails();
     }
 
 

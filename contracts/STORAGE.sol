@@ -27,4 +27,17 @@ contract STORAGE {
         RBAC_CONTRACT_ADDRESS = _RBAC_CONTRACT_ADDRESS;
     }
 
+    function addPatientDetails(address PID, address instanceAdd) public {
+        patientDetails[PID] = instanceAdd;
+    }
+    function addGovernmentDetails(address GID, address instanceAdd) public {
+        governmentDetails[GID] = instanceAdd;
+    }
+    function addHospitalDetails(address HID, address instanceAdd) public {
+        hospitalDetails[HID] = instanceAdd;
+    }
+    function addDoctorDetails(address DID, address instanceAdd) public {
+        doctorDetails[DID] = instanceAdd;
+    }
+
 }
