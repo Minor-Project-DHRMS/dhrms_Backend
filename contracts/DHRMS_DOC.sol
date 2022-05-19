@@ -11,6 +11,11 @@ contract DHRMS_DOC{
     address STORAGE_CONTRACT_ADDRESS;
     address RBAC_CONTRACT_ADDRESS;
 
+    constructor(address _STORAGE_CONTRACT_ADDRESS, address _RBAC_CONTRACT_ADDRESS) {
+        STORAGE_CONTRACT_ADDRESS = _STORAGE_CONTRACT_ADDRESS;
+        RBAC_CONTRACT_ADDRESS = RBAC_CONTRACT_ADDRESS;
+    }
+
     event newDoctor(
         string _doctorName,
         string _phoneNumber,

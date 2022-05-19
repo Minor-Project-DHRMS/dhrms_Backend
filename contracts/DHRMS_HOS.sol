@@ -1,10 +1,23 @@
+// SPDX-License-Identifier: Unlicense
+pragma solidity ^0.8.0;
+
 import "contracts/RBAC.sol";
 import "contracts/STORAGE.sol";
 
+import "contracts/Hospital.sol";
 
-contract STORAGE_HOS{
+
+
+
+
+contract DHRMS_HOS{
     address STORAGE_CONTRACT_ADDRESS;
     address RBAC_CONTRACT_ADDRESS;
+
+    constructor(address _STORAGE_CONTRACT_ADDRESS, address _RBAC_CONTRACT_ADDRESS) {
+        STORAGE_CONTRACT_ADDRESS = _STORAGE_CONTRACT_ADDRESS;
+        RBAC_CONTRACT_ADDRESS = RBAC_CONTRACT_ADDRESS;
+    }
 
     event newHospital(string HospitalName, string ph_no, address HID);
     event newRecordForUploadH(string _file, address _PID, address _HID);

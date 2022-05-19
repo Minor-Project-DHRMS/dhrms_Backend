@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 
 import "contracts/Government.sol";
-import "contracts/Hospital.sol";
 import "hardhat/console.sol";
 
 

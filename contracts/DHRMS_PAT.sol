@@ -1,9 +1,19 @@
+// SPDX-License-Identifier: Unlicense
+pragma solidity ^0.8.0;
+
 import "contracts/Patient.sol";
+import "contracts/STORAGE.sol";
+import "contracts/RBAC.sol";
 
 
 contract DHRMS_PAT{
     address STORAGE_CONTRACT_ADDRESS;
     address RBAC_CONTRACT_ADDRESS;
+
+    constructor(address _STORAGE_CONTRACT_ADDRESS, address _RBAC_CONTRACT_ADDRESS) {
+        STORAGE_CONTRACT_ADDRESS = _STORAGE_CONTRACT_ADDRESS;
+        RBAC_CONTRACT_ADDRESS = RBAC_CONTRACT_ADDRESS;
+    }
 
     event newPatient(string _details, address _PID);
     event newReadAccess(address _DID);
@@ -17,7 +27,7 @@ contract DHRMS_PAT{
         public
         onlyGoverment
     {
-        STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails[_PID] = address(new Patient(_details, _PID));
+        STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(_PID) = address(new Patient(_details, _PID));
         ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS).grantRoleAccessControl(
             "PATIENT",
             _PID

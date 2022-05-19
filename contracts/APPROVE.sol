@@ -5,6 +5,11 @@ import "contracts/Government.sol";
 import "contracts/Hospital.sol";
 import "contracts/Doctor.sol";
 import "contracts/Patient.sol";
+import "contracts/STORAGE.sol";
+import "contracts/DHRMS_PAT.sol";
+import "contracts/DHRMS_DOC.sol";
+import "contracts/DHRMS_HOS.sol";
+import "contracts/DHRMS_GOV.sol";
 import "hardhat/console.sol";
 
 contract ApproveDetails {
@@ -15,10 +20,19 @@ contract ApproveDetails {
         uint256 timestamp;
     }
 
-    address DHRMS_CONTRACT_ADDRESS;
+    address STORAGE_CONTRACT_ADDRESS;
+    address DHRMS_GOV_CONTRACT_ADDRESS;
+    address DHRMS_PAT_CONTRACT_ADDRESS;
+    address DHRMS_DOC_CONTRACT_ADDRESS;
+    address DHRMS_HOS_CONTRACT_ADDRESS;
 
-    constructor(address _DHRMS_CONTRACT_ADDRESS) {
-        DHRMS_CONTRACT_ADDRESS = _DHRMS_CONTRACT_ADDRESS;
+
+    constructor(address _DHRMS_PAT_CONTRACT_ADDRESS,address _DHRMS_HOS_CONTRACT_ADDRESS,address _DHRMS_DOC_CONTRACT_ADDRESS,address _DHRMS_GOV_CONTRACT_ADDRESS) {
+        DHRMS_PAT_CONTRACT_ADDRESS = _DHRMS_PAT_CONTRACT_ADDRESS;
+        DHRMS_HOS_CONTRACT_ADDRESS = _DHRMS_HOS_CONTRACT_ADDRESS;
+        DHRMS_DOC_CONTRACT_ADDRESS = _DHRMS_DOC_CONTRACT_ADDRESS;
+        DHRMS_GOV_CONTRACT_ADDRESS = _DHRMS_GOV_CONTRACT_ADDRESS;
+
     }
 
     Approve[] private ApproveList;
@@ -133,7 +147,7 @@ contract ApproveDetails {
                     keccak256(bytes(ApproveList[i].userType)) ==
                     keccak256("GOV")
                 ) {
-                    DHRMS(DHRMS_CONTRACT_ADDRESS).addGovernmentOffice(
+                    DHRMS_GOV(DHRMS_GOV_CONTRACT_ADDRESS).addGovernmentOffice(
                         Government(ApproveList[i].instanceAdd).getOfficeName(),
                         Government(ApproveList[i].instanceAdd).getPhoneNumber(),
                         Government(ApproveList[i].instanceAdd).getGID()
@@ -142,7 +156,7 @@ contract ApproveDetails {
                     keccak256(bytes(ApproveList[i].userType)) ==
                     keccak256("HOS")
                 ) {
-                    DHRMS(DHRMS_CONTRACT_ADDRESS).addHospital(
+                    DHRMS_HOS(DHRMS_HOS_CONTRACT_ADDRESS).addHospital(
                         Hospital(ApproveList[i].instanceAdd).getHospitalName(),
                         Hospital(ApproveList[i].instanceAdd).getPhoneNumber(),
                         Hospital(ApproveList[i].instanceAdd).getHID()
@@ -151,7 +165,7 @@ contract ApproveDetails {
                     keccak256(bytes(ApproveList[i].userType)) ==
                     keccak256("DOC")
                 ) {
-                    DHRMS(DHRMS_CONTRACT_ADDRESS).addDoctor(
+                    DHRMS_DOC(DHRMS_DOC_CONTRACT_ADDRESS).addDoctor(
                         Doctor(ApproveList[i].instanceAdd).getDoctorName(),
                         Doctor(ApproveList[i].instanceAdd).getphoneNumber(),
                         Doctor(ApproveList[i].instanceAdd).getQualification(),
@@ -165,7 +179,7 @@ contract ApproveDetails {
                     keccak256(bytes(ApproveList[i].userType)) ==
                     keccak256("PAT")
                 ) {
-                    DHRMS(DHRMS_CONTRACT_ADDRESS).addPatient(
+                    DHRMS_PAT(DHRMS_PAT_CONTRACT_ADDRESS).addPatient(
                         Patient(ApproveList[i].instanceAdd).getDetailsForGov(),
                         Patient(ApproveList[i].instanceAdd).getPID()
                     );
