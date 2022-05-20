@@ -16,6 +16,7 @@ contract DHRMS_PAT{
     }
 
     event newPatient(string _details, address _PID);
+    event editPatient(string _details, address _PID);
     event newReadAccess(address _DID);
     event newWriteAccess(address _HID);
     event removeReadAccessDoctor(address _DID);
@@ -35,6 +36,26 @@ contract DHRMS_PAT{
         );
         // STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(_PID) = ;
         emit newPatient(_details, _PID);
+    }
+
+
+    function setPatientDetails(string memory _details, address _PID)
+        public
+        onlyAuth(_PID)
+    {
+        Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(_PID)).setDetails(_details);
+        emit editPatient(_details, _PID);
+    }
+    
+    event removeOldPatient(address _PID);
+
+    function removePatient(address _PID) onlyAuth(_PID) public {
+        STORAGE(STORAGE_CONTRACT_ADDRESS).removePatientDetails(_PID);
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS).revokeRoleAccessControl(
+            "PATIENT",
+            _PID
+        );
+        emit removeOldPatient(_PID);
     }
 
     function giveReadAccess(address _DID) public onlyPatient {
@@ -104,7 +125,7 @@ contract DHRMS_PAT{
         onlyGoverment
         returns (string memory)
     {
-        return Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(_PID)).getDetails();
+        return Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(_PID)).getDetailsForGov();
     }
 
 
@@ -113,25 +134,13 @@ contract DHRMS_PAT{
         _;
     }
 
-    
-
     modifier onlyPatient() {
         ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyPatient();
-        _;
-        
+        _; 
     }
 
-    
-
-    modifier onlyDoctor() {
-        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyDoctor();
-        _;
-    }
-
-    
-
-    modifier onlyHospital() {
-        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyHospital();
+    modifier onlyAuth(address _PID) {
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyAuth(_PID,"PATIENT");
         _;
     }
 }

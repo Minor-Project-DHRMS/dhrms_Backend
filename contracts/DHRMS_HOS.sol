@@ -20,8 +20,9 @@ contract DHRMS_HOS{
     }
 
     event newHospital(string HospitalName, string ph_no, address HID);
-    event newRecordForUploadH(string _file, address _PID, address _HID);
+    event newRecordForUploadH(string _file);
 
+    event editHospital(string HospitalName, string ph_no, address HID);
 
 
     function addHospital(
@@ -40,27 +41,49 @@ contract DHRMS_HOS{
     }
 
 
-
-    function sendRecordsForUploadH(
-        string memory _file,
-        address _PID,
+    function setHospitalDetails(
+        string memory _hospitalName,
+        string memory _phoneNumber,
         address _HID
-    ) public onlyHospital {
-        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(msg.sender)).addToUplaodQueue(
-            _file,
-            _PID,
-            _HID
-        );
-        emit newRecordForUploadH(_file, _PID, _HID);
+    ) public onlyAuth(_HID) {
+        STORAGE(STORAGE_CONTRACT_ADDRESS).addHospitalDetails(_HID,address(
+            new Hospital(_hospitalName, _HID, _phoneNumber)
+        ));
+        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(_HID)).setHospitalName(_hospitalName);
+        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(_HID)).setPhoneNumber(_phoneNumber);
+        emit editHospital(_hospitalName, _phoneNumber, _HID);
     }
 
+    event removeOldHospital(address _HID);
 
-    function reportUploaded(address _PID, string memory _CID)
+    function removeHospital(address _HID) onlyAuth(_HID) public {
+        STORAGE(STORAGE_CONTRACT_ADDRESS).removeHospitalDetails(_HID);
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS).revokeRoleAccessControl(
+            "HOSPITAL",
+            _HID
+        );
+        emit removeOldHospital(_HID);
+    }
+
+    
+
+    function sendRecordsForUploadH(
+        string memory _file
+    ) public onlyHospital {
+        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(msg.sender)).addToUplaodQueue(_file);
+        emit newRecordForUploadH(_file);
+    }
+
+    function getUploadQueue() public onlyHospital view returns (string[] memory) {
+        return Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(msg.sender)).getUploadQueue();
+    }
+
+    function reportUploaded(address _PID, string memory _CID, string memory _file)
         public
         onlyHospital
     {
         Patient(STORAGE(STORAGE_CONTRACT_ADDRESS).patientDetails(_PID)).addrecordsHistory(_CID);
-        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(msg.sender)).removeReport(_PID);
+        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(msg.sender)).removeReport(_file);
     }
 
     function getHospitalDoctorList(address _HID)
@@ -96,24 +119,14 @@ contract DHRMS_HOS{
         _;
     }
 
-    
-
-    modifier onlyPatient() {
-        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyPatient();
-        _;
-    }
-
-    
-
-    modifier onlyDoctor() {
-        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyDoctor();
-        _;
-    }
-
-    
 
     modifier onlyHospital() {
         ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyHospital();
+        _;
+    }
+
+    modifier onlyAuth(address _HOS) {
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyAuth(_HOS,"HOSPITAL");
         _;
     }
 }

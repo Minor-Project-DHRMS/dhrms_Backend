@@ -21,18 +21,14 @@ contract Hospital {
         phoneNumber = _phoneNumber;
     }
 
-    function setHospitalDetails(string memory _hospitalName,
-        string memory _phoneNumber) public {
-            hospitalName = _hospitalName;
-            phoneNumber = _phoneNumber;
-        }
+
     function getHospitalName() public view returns (string memory) {
         return hospitalName;
     }
 
-    // function setHospitalName(string memory _hospitalName) public {
-    //     hospitalName = _hospitalName;
-    // }
+    function setHospitalName(string memory _hospitalName) public {
+        hospitalName = _hospitalName;
+    }
 
     function getHID() public view returns (address) {
         return HID;
@@ -46,9 +42,9 @@ contract Hospital {
         return phoneNumber;
     }
 
-    // function setPhoneNumber(string memory _phoneNumber) public {
-    //     phoneNumber = _phoneNumber;
-    // }
+    function setPhoneNumber(string memory _phoneNumber) public {
+        phoneNumber = _phoneNumber;
+    }
 
     function addDoctor(address _DID) public {
         doctorsList.push(_DID);

@@ -40,4 +40,18 @@ contract STORAGE {
         doctorDetails[DID] = instanceAdd;
     }
 
+
+    function removePatientDetails(address PID) public {
+        delete patientDetails[PID];
+    }
+    function removeGovernmentDetails(address GID) public {
+        delete governmentDetails[GID];
+    }
+    function removeHospitalDetails(address HID) public {
+        delete hospitalDetails[HID];
+    }
+    function removeDoctorDetails(address DID) public {
+        delete doctorDetails[DID];
+    }
+
 }

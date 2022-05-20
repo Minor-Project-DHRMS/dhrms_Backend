@@ -30,6 +30,9 @@ contract ROLE_BASED_ACCESS is AccessControl {
     function grantRoleAccessControl(bytes32 _role, address _address) public {
         grantRole(_role, _address);
     }
+    function revokeRoleAccessControl(bytes32 _role, address _address) public {
+        revokeRole(_role, _address);
+    }
 
     function setUpRoleAccessControl(bytes32 _role, address _address) public {
         _setupRole(_role, _address);
@@ -84,6 +87,12 @@ contract ROLE_BASED_ACCESS is AccessControl {
         require(
             hasRole("HOSPITAL", tx.origin),
             "Restricted only to HOSPITAL."
+        );
+    }
+    function _onlyAuth(address userAdd,string memory userType) public view {
+        require(
+            hasRole(keccak256(bytes(userType)), tx.origin) || (tx.origin == userAdd),
+            "Restricted only to User"
         );
     }
 }

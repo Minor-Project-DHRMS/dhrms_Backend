@@ -38,9 +38,24 @@ contract Doctor {
         return doctorName;
     }
 
-    function setDoctordoctorName(string memory _doctorName) public {
-        doctorName = _doctorName;
+    function setDoctorDetails(string memory _doctorName,
+        string memory _phoneNumber,
+        string memory _qualification,
+        string memory _photo,
+        string memory _dob,
+        address _HID,
+        string memory _department)  public {
+            doctorName = _doctorName;
+            phoneNumber = _phoneNumber;
+            qualification = _qualification;
+            photo = _photo;
+            dob = _dob;
+            HID = _HID;
+            department = _department;
+        
     }
+
+    
 
     function getDID() public view returns (address) {
         return DID;
@@ -50,48 +65,24 @@ contract Doctor {
         DID = _DID;
     }
 
-    function setphoneNumber(string memory _phoneNumber) public {
-        phoneNumber = _phoneNumber;
-    }
-
     function getphoneNumber() public view returns (string memory) {
         return phoneNumber;
-    }
-
-    function setQualification(string memory _qualification) public {
-        qualification = _qualification;
     }
 
     function getQualification() public view returns (string memory) {
         return qualification;
     }
 
-    function setPhoto(string memory _photo) public {
-        photo = _photo;
-    }
-
     function getPhoto() public view returns (string memory) {
         return photo;
-    }
-
-    function setDob(string memory _dob) public {
-        dob = _dob;
     }
 
     function getDob() public view returns (string memory) {
         return dob;
     }
 
-    function setDepartment(string memory _department) public {
-        department = _department;
-    }
-
     function getDepartment() public view returns (string memory) {
         return department;
-    }
-
-    function setHospital(address _HID) public {
-        HID = _HID;
     }
 
     function getHospital() public view returns (address) {

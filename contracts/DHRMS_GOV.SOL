@@ -37,6 +37,32 @@ contract DHRMS_GOV{
         emit newOffice(_officeName, _phoneNumber, _GID);
     }
 
+    event editOffice(string officeName, string _phoneNumber, address _GID);
+
+    function setGovernmentOfficeDetails(
+        string memory _officeName,
+        string memory _phoneNumber,
+        address _GID
+    ) public onlyGoverment {
+        
+        Government(STORAGE(STORAGE_CONTRACT_ADDRESS).governmentDetails(_GID)).setOfficeName(_officeName);
+        Government(STORAGE(STORAGE_CONTRACT_ADDRESS).governmentDetails(_GID)).setPhoneNumber(_phoneNumber);
+
+        emit editOffice(_officeName, _phoneNumber, _GID);
+    }
+
+    event removeOldGovernment(address _GID);
+
+    function removeGovernment(address _GID) onlyAuth(_GID) public {
+        STORAGE(STORAGE_CONTRACT_ADDRESS).removeGovernmentDetails(_GID);
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS).revokeRoleAccessControl(
+            "GOVERNMENT",
+            _GID
+        );
+        emit removeOldGovernment(_GID);
+    }
+
+
 
     function getGovernmentDetails(address _GID)
         public
@@ -73,6 +99,11 @@ contract DHRMS_GOV{
 
     modifier onlyHospital() {
         ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyHospital();
+        _;
+    }
+
+    modifier onlyAuth(address _GID) {
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyAuth(_GID,"GOVERNMENT");
         _;
     }
 

@@ -53,6 +53,7 @@ contract DHRMS_DOC{
             "DOCTOR",
             _DID
         );
+        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(_HID)).addDoctor(_DID);
         emit newDoctor(
             _doctorName,
             _phoneNumber,
@@ -65,17 +66,71 @@ contract DHRMS_DOC{
         );
     }
 
-    event newRecordForUpload(string _file, address _PID);
+    event editDoctor(
+        string _doctorName,
+        string _phoneNumber,
+        string _qualification,
+        string _photo,
+        string _dob,
+        address _HID,
+        address _DID,
+        string _department
+    );
+
+    function setDoctorDetails(
+        string memory _doctorName,
+        string memory _phoneNumber,
+        string memory _qualification,
+        string memory _photo,
+        string memory _dob,
+        address _HID,
+        address _DID,
+        string memory _department
+    ) public onlyAuth(_DID) {
+        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(msg.sender)).getHospital())).removeDoctor(_DID);
+        Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(msg.sender)).setDoctorDetails(_doctorName,
+                _phoneNumber,
+                _qualification,
+                _photo,
+                _dob,
+                _HID,
+                _department);
+        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(_HID)).addDoctor(_DID);
+        emit editDoctor(
+            _doctorName,
+            _phoneNumber,
+            _qualification,
+            _photo,
+            _dob,
+            _HID,
+            _DID,
+            _department
+        );
+    }
+
+    event removeOldDoctor(address _DID);
+
+    function removeDoctor(address _DID) onlyAuth(_DID) public {
+        STORAGE(STORAGE_CONTRACT_ADDRESS).removeDoctorDetails(_DID);
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS).revokeRoleAccessControl(
+            "DOCTOR",
+            _DID
+        );
+        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(msg.sender)).getHospital())).removeDoctor(_DID);
+        emit removeOldDoctor(_DID);
+    }
+
+    event newRecordForUpload(string _file);
 
 
 
-    function sendRecordsForUpload(string memory _file, address _PID)
+    function sendRecordsForUpload(string memory _file)
         public
         onlyDoctor
     {
         address _HID = Doctor(STORAGE(STORAGE_CONTRACT_ADDRESS).doctorDetails(msg.sender)).getHospital();
-        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(_HID)).addToUplaodQueue(_file, _PID, _HID);
-        emit newRecordForUpload(_file, _PID);
+        Hospital(STORAGE(STORAGE_CONTRACT_ADDRESS).hospitalDetails(_HID)).addToUplaodQueue(_file);
+        emit newRecordForUpload(_file);
     }
 
 
@@ -133,6 +188,11 @@ contract DHRMS_DOC{
 
     modifier onlyHospital() {
         ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyHospital();
+        _;
+    }
+
+    modifier onlyAuth(address _DOC) {
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyAuth(_DOC,"DOCTOR");
         _;
     }
 }

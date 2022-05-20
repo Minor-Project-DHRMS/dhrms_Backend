@@ -6,6 +6,7 @@ import "contracts/Hospital.sol";
 import "contracts/Doctor.sol";
 import "contracts/Patient.sol";
 import "contracts/STORAGE.sol";
+import "contracts/RBAC.sol";
 import "contracts/DHRMS_PAT.sol";
 import "contracts/DHRMS_DOC.sol";
 import "contracts/DHRMS_HOS.sol";
@@ -113,8 +114,11 @@ contract ApproveDetails {
 contract ApproveDetails2{
 
     address APPROVE_DETAILS_CONTRACT_ADDRESS;
-    constructor(address _APPROVE_DETAILS_CONTRACT_ADDRESS){
+    address RBAC_CONTRACT_ADDRESS;
+
+    constructor(address _APPROVE_DETAILS_CONTRACT_ADDRESS,address _RBAC_CONTRACT_ADDRESS){
         APPROVE_DETAILS_CONTRACT_ADDRESS = _APPROVE_DETAILS_CONTRACT_ADDRESS;
+        RBAC_CONTRACT_ADDRESS = _RBAC_CONTRACT_ADDRESS;
     }
     function addGovernmentOfficetoList(
         string memory _officeName,
@@ -179,6 +183,7 @@ contract ApproveDetails2{
     function getPatientDetails(address _instanceAddress)
         public
         view
+        onlyGoverment
         returns (string memory)
     {
         return Patient(_instanceAddress).getDetails();
@@ -186,7 +191,7 @@ contract ApproveDetails2{
 
     function getDoctorDetails(address _instanceAddress)
         public
-        view
+        view onlyGoverment
         returns (string[6] memory)
     {
         return [
@@ -199,7 +204,7 @@ contract ApproveDetails2{
         ];
     }
 
-    function getDoctorH(address _instanceAddress) public view returns (address) {
+    function getDoctorH(address _instanceAddress) onlyGoverment public view returns (address) {
         return Doctor(_instanceAddress).getHospital();
     }
 
@@ -207,6 +212,7 @@ contract ApproveDetails2{
     function getHospitalDetails(address _instanceAddress)
         public
         view
+        onlyGoverment
         returns (string[2] memory)
     {
         return [
@@ -218,6 +224,7 @@ contract ApproveDetails2{
     function getGovernmentDetails(address _instanceAddress)
         public
         view
+        onlyGoverment
         returns (string[2] memory)
     {
         return [
@@ -225,4 +232,10 @@ contract ApproveDetails2{
             Government(_instanceAddress).getPhoneNumber()
         ];
     }
+
+    modifier onlyGoverment() {
+        ROLE_BASED_ACCESS(RBAC_CONTRACT_ADDRESS)._onlyGoverment();
+        _;
+    }
+
 }
