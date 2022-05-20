@@ -9,6 +9,7 @@ contract Hospital {
     mapping(address => bool) private patients;
     address[] doctorsList;
     address[] patientsList;
+    string[] uplaodQueue;
 
     constructor(
         string memory _hospitalName,
@@ -20,23 +21,18 @@ contract Hospital {
         phoneNumber = _phoneNumber;
     }
 
-    struct fileDetails {
-        address PID;
-        string file;
-        address DID;
-        address HID;
-        uint256 timeStamp;
-    }
-
-    fileDetails[] uplaodQueue;
-
+    function setHospitalDetails(string memory _hospitalName,
+        string memory _phoneNumber) public {
+            hospitalName = _hospitalName;
+            phoneNumber = _phoneNumber;
+        }
     function getHospitalName() public view returns (string memory) {
         return hospitalName;
     }
 
-    function setHospitalName(string memory _hospitalName) public {
-        hospitalName = _hospitalName;
-    }
+    // function setHospitalName(string memory _hospitalName) public {
+    //     hospitalName = _hospitalName;
+    // }
 
     function getHID() public view returns (address) {
         return HID;
@@ -50,9 +46,9 @@ contract Hospital {
         return phoneNumber;
     }
 
-    function setPhoneNumber(string memory _phoneNumber) public {
-        phoneNumber = _phoneNumber;
-    }
+    // function setPhoneNumber(string memory _phoneNumber) public {
+    //     phoneNumber = _phoneNumber;
+    // }
 
     function addDoctor(address _DID) public {
         doctorsList.push(_DID);
@@ -110,23 +106,19 @@ contract Hospital {
     }
 
     function addToUplaodQueue(
-        string memory _file,
-        address PID,
-        address _HID
+        string memory _record
     ) public {
-        uplaodQueue.push(
-            fileDetails(PID, _file, msg.sender, _HID, block.timestamp)
-        );
+        uplaodQueue.push(_record);
     }
 
-    function getUploadQueue() public view returns (fileDetails[] memory) {
+    function getUploadQueue() public view returns (string[] memory) {
         return uplaodQueue;
     }
 
-    function removeReport(address _PID) public {
+    function removeReport(string memory _record) public {
         
         for(uint i=0; i < uplaodQueue.length; i++){
-            if(uplaodQueue[i].PID == _PID){
+            if(keccak256(bytes(uplaodQueue[i])) == keccak256(bytes(_record))){
                 if(uplaodQueue.length != 1){
                     uplaodQueue[i] = uplaodQueue[uplaodQueue.length-1];
                 }
