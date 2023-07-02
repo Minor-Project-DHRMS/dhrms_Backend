@@ -2,7 +2,7 @@
  
 Decentralized Health Record Management System Front-end : https://github.com/afzalap/dhrms_front_end
 
-## Demo
+# Demo
 
 [![YouTube Video](https://img.youtube.com/vi/7oQLPaDK4FY/0.jpg)](https://www.youtube.com/watch?v=7oQLPaDK4FY)
 
@@ -16,5 +16,7 @@ The Decentralized Health Record Management System is a platform designed to secu
 - Role Based Access Control
 - Decentralized architecture for enhanced data privacy and integrity
 - Easy access and retrieval of patient records
+
+## License
 
 [MIT License](LICENSE)
